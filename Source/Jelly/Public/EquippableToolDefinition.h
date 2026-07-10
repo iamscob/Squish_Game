@@ -18,6 +18,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		TSubclassOf<AEquippableToolBase> ToolAsset;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TSoftObjectPtr<UStaticMesh> ToolMesh;
 	
 	virtual UEquippableToolDefinition* CreateItemCopy(UObject* Outer) const override;
 };

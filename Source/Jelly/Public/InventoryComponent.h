@@ -18,7 +18,7 @@ public:
 	UInventoryComponent();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category = "Tools")
-	TArray<UEquippableToolDefinition*> InventoryTool;
+	TArray<TObjectPtr<UEquippableToolDefinition>> InventoryTool;
 	
 	
 protected:

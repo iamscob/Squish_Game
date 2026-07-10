@@ -11,9 +11,12 @@ AEquippableToolBase::AEquippableToolBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	ToolMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ToolMesh"));
+	ToolMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ToolMesh"));
 	check(ToolMeshComponent!=nullptr);
-
+	SetRootComponent(ToolMeshComponent);
+	
+	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ToolMeshComponent->SetGenerateOverlapEvents(false);
 }
 
 // Called when the game starts or when spawned

@@ -11,6 +11,7 @@ class UItemDefinition;
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {
+	None		UMETA(DisplayName = "None"),
 	Tool		UMETA(DisplayName = "Tool"),
 	Consumable	UMETA(DisplayName = "Consumable")
 };
@@ -35,10 +36,10 @@ struct FItemData : public FTableRowBase
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ItemData")
-FText ID;
+	EItemType ItemType = EItemType::None;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ItemData")
-	EItemType ItemType; 
+	FText ID;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ItemData")
 	FItemText ItemText;

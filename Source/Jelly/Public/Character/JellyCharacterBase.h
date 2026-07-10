@@ -11,9 +11,15 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "JellyCharacterBase.generated.h"
 
+class UAnimBlueprint;
 class UInputMappingContext;
 class UInputAction;
 class UInputComponent;
+class UItemDefinition;
+class UEquippableToolDefinition;
+class AEquippableToolBase;
+class UInventoryComponent;
+
 UCLASS()
 class JELLY_API AJellyCharacterBase : public ACharacter
 {
@@ -27,7 +33,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	//Input Actions Declaration
+	// Input Actions Declaration
 		
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> ThirdPersonContext;
@@ -40,11 +46,20 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
+	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = "Input")
+	TObjectPtr<UInputAction> UseAction;
+	
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tools")
+	TObjectPtr<AEquippableToolBase> EquippedTool;
 
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
@@ -68,4 +83,18 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> CameraBoom;
+	
+	
+	// Inventory & Equipment Declaration
+	UPROPERTY(VisibleAnywhere, Category = "Inventory")
+	TObjectPtr<UInventoryComponent> InventoryComponent;
+	
+	UFUNCTION()
+	bool IsToolAlreadyOwned(UEquippableToolDefinition* ToolDefinition);
+	
+	UFUNCTION()
+	bool AttachTool(UEquippableToolDefinition* ToolDefinition);
+	
+	UFUNCTION()
+	bool GiveItem(UItemDefinition* ItemDefinition);
 };

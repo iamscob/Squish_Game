@@ -3,7 +3,12 @@
 
 #include "JellyCharacterBase.h"
 #include "EnhancedInputSubsystems.h"
-#include "Components/CapsuleComponent.h"
+#include "Animation/AnimBlueprint.h"
+#include "InventoryComponent.h"
+#include "EquippableToolBase.h"
+#include "EquippableToolDefinition.h"
+
+
 
 // Sets default values
 AJellyCharacterBase::AJellyCharacterBase()
@@ -14,22 +19,20 @@ AJellyCharacterBase::AJellyCharacterBase()
 	// Setting Camera Boom Up
 	CameraBoom=CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	check(CameraBoom!=nullptr);
-	
 	CameraBoom->SetupAttachment((GetRootComponent()));
-	
 	CameraBoom->TargetArmLength = 400.f;
-	
 	CameraBoom->bUsePawnControlRotation = true;
-	
 	CameraBoom->SetRelativeLocation(CameraOffset);
 	
 	
 	// Setting Up Camera Component
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	check(FollowCamera!=nullptr);
-	
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->FieldOfView = FieldOfView;
+	
+	// Setting Up Inventory Component
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	
 
 }
@@ -71,7 +74,7 @@ void AJellyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	}
 	
 }
-//Input Actions Implementation
+// Input Actions Implementation
 void AJellyCharacterBase::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementValue = Value.Get<FVector2D>();
@@ -90,7 +93,7 @@ void AJellyCharacterBase::Move(const FInputActionValue& Value)
 	}
 }
 	
-	//Camera Look Implementation
+	// Camera Look Implementation
 void AJellyCharacterBase::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisValue = Value.Get<FVector2D>();
@@ -103,3 +106,106 @@ void AJellyCharacterBase::Look(const FInputActionValue& Value)
 }
 
 
+	// Check if tool is already owned
+bool AJellyCharacterBase::IsToolAlreadyOwned(UEquippableToolDefinition* ToolDefinition)
+{
+	for (UEquippableToolDefinition* InventoryItem : InventoryComponent->InventoryTool)
+	{
+		if (ToolDefinition->ID.EqualTo(InventoryItem->ID))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+	// Tool Attachment
+bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Attach Tool is called"));
+	if (!IsToolAlreadyOwned(ToolDefinition))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Not own yet Spawning"));
+		AEquippableToolBase* ToolToEquip = GetWorld()->SpawnActor<AEquippableToolBase>(ToolDefinition->ToolAsset, this->GetActorTransform());
+		if (!ToolToEquip)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Spawn Failed, Check Tool Asset"));
+			return false;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Tool Spawned"));
+		
+		UStaticMesh* ToolMesh = ToolDefinition->ToolMesh.IsValid()
+		? ToolDefinition->ToolMesh.Get()
+		: ToolDefinition->ToolMesh.LoadSynchronous();
+
+		if (ToolMesh && ToolToEquip->ToolMeshComponent)
+		{
+			ToolToEquip->ToolMeshComponent->SetStaticMesh(ToolMesh);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Tool Assigned"));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Tool Assign Failed"));
+		}
+		
+		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+		
+		ToolToEquip->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("RightHandIndex3")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Attached to socket"));
+		
+		InventoryComponent->InventoryTool.Add(ToolDefinition);
+		ToolToEquip->OwningCharacter = this;
+		EquippedTool = ToolToEquip;
+
+		if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+		{
+			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			{
+				Subsystem->AddMappingContext((ToolToEquip->ToolMappingContext),1);
+			}
+			ToolToEquip->BindInputAction(UseAction);
+		}return true;
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Already Owned"));
+		return false;
+	}
+}
+
+bool AJellyCharacterBase::GiveItem(UItemDefinition* ItemDefinition)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("GiveItem Called"));
+	if (!ItemDefinition)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Tool is NULL"));
+		return false;
+	}
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Tool is Valid"));
+	switch (ItemDefinition->ItemType)
+	{
+	case EItemType::Tool:
+		{	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Item is Tool"));
+			UEquippableToolDefinition* ToolDefinition = Cast<UEquippableToolDefinition>(ItemDefinition);
+			if (ToolDefinition != nullptr)
+			{	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Cast to ToolDefinition succeed"));
+				return AttachTool(ToolDefinition);
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Cast to ToolDefinition screwed"));
+				return false;
+			}
+		}
+	case EItemType::Consumable:
+		{GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Item Consumable"));
+			return false;
+		}
+	default:
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UNKNOWN"));
+		return false;
+	}
+
+}

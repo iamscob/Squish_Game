@@ -104,17 +104,25 @@ void APickupBase::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AJellyCharacterBase* Character = Cast<AJellyCharacterBase>(OtherActor);
 	if (Character != nullptr)
 	{
-		PickupMeshComponent->SetVisibility(false);
-		PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		bool bPickedUp = Character->GiveItem(ReferenceItem);
+		if (bPickedUp)
+		{
+			PickupMeshComponent->SetVisibility(false);
+			PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+		
+		if (bShouldRespawn)
+		{
+			GetWorldTimerManager().SetTimer(RespawnTimerHandler, this, &APickupBase::InitializePickup, RespawnTime, false);
+		}
+		
 	}
 	
-	if (bShouldRespawn)
-	{
-		GetWorldTimerManager().SetTimer(RespawnTimerHandler, this, &APickupBase::InitializePickup, RespawnTime, false);
-	}
+	
 	
 }
+
 void APickupBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);

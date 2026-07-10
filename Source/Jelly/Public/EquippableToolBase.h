@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "EnhancedInputSubsystems.h"
 #include "Animation/AnimBlueprint.h"
-#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "EquippableToolBase.generated.h"
 
 class AJellyCharacterBase;
@@ -26,10 +26,10 @@ public:
 	TObjectPtr<UAnimBlueprint> PickupToolAnim;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<USkeletalMeshComponent> ToolMeshComponent;
+	TObjectPtr<UStaticMeshComponent> ToolMeshComponent;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	TObjectPtr<AJellyCharacterBase> OwingCharacter;
+	TObjectPtr<AJellyCharacterBase> OwningCharacter;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UInputMappingContext> ToolMappingContext;
