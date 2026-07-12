@@ -15,11 +15,13 @@ APickupBase::APickupBase()
 	check (PickupMeshComponent != nullptr);
 	SetRootComponent(PickupMeshComponent);
 	
-	PickupCollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	PickupMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
+	
+	PickupCollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	check (PickupCollisionComponent != nullptr);
 	
 	PickupCollisionComponent->SetupAttachment(PickupMeshComponent);
-	PickupCollisionComponent->SetSphereRadius(32.f);
+	PickupCollisionComponent->SetBoxExtent(FVector(32.f,32.f,32.f));
 	PickupCollisionComponent->SetGenerateOverlapEvents(true);
 	PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	PickupCollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -30,26 +32,45 @@ APickupBase::APickupBase()
 void APickupBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!PickupCollisionComponent)
+	{
+	return;;	
+	}
 	
 	PickupCollisionComponent->OnComponentBeginOverlap.RemoveAll(this);
-	PickupCollisionComponent->OnComponentBeginOverlap.AddDynamic(
-		this, &APickupBase::OnSphereBeginOverlap
-		);
+	PickupCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &APickupBase::OnBoxBeginOverlap);
 	PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	InitializePickup();
 	
+	AnimStartOffsetZ = GetActorLocation().Z;
 }
 
 // Called every frame
 void APickupBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (ReferenceItem && ReferenceItem->ItemType == EItemType::Consumable)
+	{
+		FRotator CurrentRotation = PickupMeshComponent->GetRelativeRotation();
+		CurrentRotation.Yaw += RotationSpeed * DeltaTime;
+		PickupMeshComponent->SetRelativeRotation(CurrentRotation);
+		float Time = GetWorld()->GetTimeSeconds();
+		float FloatingOffset = FMath::Sin(Time * FloatingSpeed) * FloatingAmplitude;
+		
+		FVector NewLocation = GetActorLocation();
+		NewLocation.Z = AnimStartOffsetZ + FloatingOffset;
+		SetActorLocation(NewLocation);
+	}
 }
 
 // Item Initialization Fun
 void APickupBase::InitializePickup()
 {
+	if (!PickupMeshComponent || !PickupCollisionComponent)
+	{	
+		return;
+	}
 	const FSoftObjectPath TablePath = PickupDataTable.ToSoftObjectPath();
 	if (!TablePath.IsNull() && !PickupItemID.IsNone())
 	{
@@ -90,13 +111,37 @@ void APickupBase::InitializePickup()
 	}
 	
 	PickupMeshComponent->SetVisibility(true);
-	PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	if (ReferenceItem && ReferenceItem->ItemType == EItemType::Tool)
+	{
+		PickupMeshComponent->SetSimulatePhysics(true);
+		PickupMeshComponent->SetCollisionEnabled((ECollisionEnabled::QueryAndPhysics));
+		PickupMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
+		PickupMeshComponent->SetMassOverrideInKg(NAME_None,50.0f);
+	}
+	else
+	{
+		PickupMeshComponent->SetSimulatePhysics(false);
+		PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		PickupMeshComponent->SetCollisionProfileName(TEXT("OverlapAll"));
+	}
+
+
 	
+	if (PickupMeshComponent->GetStaticMesh())
+	{
+		FBoxSphereBounds Bounds = PickupMeshComponent->GetStaticMesh()->GetBounds();
+		FVector BoxExtent = Bounds.BoxExtent*BoxScale;
+		PickupCollisionComponent->SetBoxExtent(BoxExtent);
+	}
+	if (PickupOutlineMaterial)
+	{
+		PickupMeshComponent->SetOverlayMaterial(PickupOutlineMaterial);
+	}
 }
 
 // Overlap implementation
 	
-void APickupBase::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APickupBase::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Attempting a pickup collision"));
  
@@ -107,33 +152,10 @@ void APickupBase::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		bool bPickedUp = Character->GiveItem(ReferenceItem);
 		if (bPickedUp)
 		{
-			PickupMeshComponent->SetVisibility(false);
-			PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		}
-		
-		if (bShouldRespawn)
-		{
-			GetWorldTimerManager().SetTimer(RespawnTimerHandler, this, &APickupBase::InitializePickup, RespawnTime, false);
+		K2_DestroyActor();
 		}
 		
 	}
-	
-	
 	
 }
 
-void APickupBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-	const FName ChangedPropertyName = PropertyChangedEvent.Property 
-	? PropertyChangedEvent.Property->GetFName() 
-	: NAME_None;
-	
-	if (ChangedPropertyName == GET_MEMBER_NAME_CHECKED(APickupBase, PickupItemID)
-		|| ChangedPropertyName == GET_MEMBER_NAME_CHECKED(APickupBase, PickupDataTable))
-	{
-		InitializePickup();
-	}
-	
-};

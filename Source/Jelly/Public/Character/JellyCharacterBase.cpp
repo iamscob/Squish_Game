@@ -201,7 +201,7 @@ bool AJellyCharacterBase::GiveItem(UItemDefinition* ItemDefinition)
 		}
 	case EItemType::Consumable:
 		{GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Item Consumable"));
-			return false;
+			return true;
 		}
 	default:
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UNKNOWN"));

@@ -1,10 +1,11 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Character/JellyCharacterBase.h"
 #include "PickupBase.generated.h"
 
@@ -31,35 +32,40 @@ protected:
 	FName PickupItemID;
 	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Table")
 	TSoftObjectPtr<UDataTable> PickupDataTable; 
+	
 	UPROPERTY(VisibleAnywhere, Category = "Pickup | Reference Item")
 	TObjectPtr<UItemDefinition> ReferenceItem;
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Pickup | Mesh")
 	TObjectPtr<UStaticMeshComponent> PickupMeshComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Components")
-	TObjectPtr<USphereComponent> PickupCollisionComponent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Collision Box")
+	TObjectPtr<UBoxComponent> PickupCollisionComponent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Visuals")
+	TObjectPtr<UMaterialInterface> PickupOutlineMaterial;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Box Scale Multiplier")
+	float BoxScale = 1.5f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Animation")
+	float RotationSpeed = 50.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Animation")
+	float FloatingAmplitude = 20.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Animation")
+	float FloatingSpeed = 2.f;
+	
+	float AnimStartOffsetZ;
 	
 	UFUNCTION()
-	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Respawn")
-	bool bShouldRespawn;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Pickup | Respawn")
-	float RespawnTime = 4.f;
-	
-	FTimerHandle RespawnTimerHandler;
-	
-	// Test fun (debug and tests only)
-	
-#if WITH_EDITOR
-	
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	
-#endif
-	
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };
+
+
