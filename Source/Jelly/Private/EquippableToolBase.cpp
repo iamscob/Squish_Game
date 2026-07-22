@@ -33,12 +33,16 @@ void AEquippableToolBase::Tick(float DeltaTime)
 
 }
 
-void AEquippableToolBase::Use()
-{
-	
-}
 
-void AEquippableToolBase::BindInputAction(const UInputAction* ActionToBind)
+void AEquippableToolBase::ThrowTool(const FVector& LaunchDirection, float LaunchForce)
 {
+	if (!ToolMeshComponent) return;
 	
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
+	ToolMeshComponent->SetSimulatePhysics(true);
+	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
+	
+	ToolMeshComponent->AddImpulse(LaunchDirection * LaunchForce,NAME_None, true);
 }

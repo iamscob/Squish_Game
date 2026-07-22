@@ -47,8 +47,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
 	
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = "Input")
-	TObjectPtr<UInputAction> UseAction;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "Input")
+	TObjectPtr<UInputAction> ThrowAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Input")
+	TObjectPtr<UInputAction> DropAction;
 	
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tools")
@@ -68,6 +71,7 @@ public:
 	
 	UFUNCTION()
 	void Look(const FInputActionValue& Value);
+	
 	
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> FollowCamera;
@@ -97,4 +101,10 @@ public:
 	
 	UFUNCTION()
 	bool GiveItem(UItemDefinition* ItemDefinition);
+	
+	UFUNCTION()
+	void Throw();
+	
+	UFUNCTION()
+	void Drop();
 };

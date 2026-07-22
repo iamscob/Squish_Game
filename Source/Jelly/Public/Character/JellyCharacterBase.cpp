@@ -71,6 +71,9 @@ void AJellyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJellyCharacterBase::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJellyCharacterBase::StopJumping);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered,this,&AJellyCharacterBase::Look);
+		
+		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Throw);
+		EnhancedInputComponent->BindAction(DropAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Drop);
 	}
 	
 }
@@ -123,17 +126,17 @@ bool AJellyCharacterBase::IsToolAlreadyOwned(UEquippableToolDefinition* ToolDefi
 	// Tool Attachment
 bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Attach Tool is called"));
+	
 	if (!IsToolAlreadyOwned(ToolDefinition))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Not own yet Spawning"));
+		
 		AEquippableToolBase* ToolToEquip = GetWorld()->SpawnActor<AEquippableToolBase>(ToolDefinition->ToolAsset, this->GetActorTransform());
 		if (!ToolToEquip)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Spawn Failed, Check Tool Asset"));
+			
 			return false;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Tool Spawned"));
+		
 		
 		UStaticMesh* ToolMesh = ToolDefinition->ToolMesh.IsValid()
 		? ToolDefinition->ToolMesh.Get()
@@ -142,17 +145,18 @@ bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 		if (ToolMesh && ToolToEquip->ToolMeshComponent)
 		{
 			ToolToEquip->ToolMeshComponent->SetStaticMesh(ToolMesh);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Tool Assigned"));
+			
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Tool Assign Failed"));
+			
 		}
 		
 		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-		
 		ToolToEquip->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("RightHandIndex3")));
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Attached to socket"));
+		ToolToEquip->ToolMeshComponent->SetRelativeScale3D(FVector(2.f,2.f,2.f));
+		
+		
 		
 		InventoryComponent->InventoryTool.Add(ToolDefinition);
 		ToolToEquip->OwningCharacter = this;
@@ -164,48 +168,109 @@ bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 			{
 				Subsystem->AddMappingContext((ToolToEquip->ToolMappingContext),1);
 			}
-			ToolToEquip->BindInputAction(UseAction);
-		}return true;
+		}
+		return true;
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Already Owned"));
+		
 		return false;
 	}
 }
 
+// PickUps separation
 bool AJellyCharacterBase::GiveItem(UItemDefinition* ItemDefinition)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("GiveItem Called"));
+	
 	if (!ItemDefinition)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Tool is NULL"));
 		return false;
 	}
 	
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Tool is Valid"));
+	
 	switch (ItemDefinition->ItemType)
 	{
 	case EItemType::Tool:
-		{	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Item is Tool"));
+		{
 			UEquippableToolDefinition* ToolDefinition = Cast<UEquippableToolDefinition>(ItemDefinition);
 			if (ToolDefinition != nullptr)
-			{	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Cast to ToolDefinition succeed"));
+			{	
 				return AttachTool(ToolDefinition);
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Cast to ToolDefinition screwed"));
+				
 				return false;
 			}
 		}
 	case EItemType::Consumable:
-		{GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Item Consumable"));
+		{
 			return true;
 		}
 	default:
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UNKNOWN"));
+		
 		return false;
 	}
+	
+}
+
+
+// Throw Tool fun
+void AJellyCharacterBase::Throw()
+{
+	if (!EquippedTool)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("NoTool"));
+		return;
+	}
+	FRotator CharacterRotator = GetActorRotation();
+	FRotator ThrowRotator(0.f, CharacterRotator.Yaw,0.f);
+	FVector ThrowDirection = ThrowRotator.Vector();
+
+	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
+	FVector ThrowStart = EquippedTool->GetActorLocation() + (ThrowDirection * 150.f);
+	EquippedTool->SetActorLocation(ThrowStart);
+	
+	EquippedTool->ToolMeshComponent->SetWorldScale3D(FVector(EquippedTool->WorldScale));
+	
+	EquippedTool->ToolMeshComponent->SetSimulatePhysics(true);
+	EquippedTool->ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	EquippedTool->ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
+	
+	
+	float LaunchForce = 1800.f;
+	EquippedTool->ToolMeshComponent->AddImpulse(ThrowDirection * LaunchForce, NAME_None, true);
+	
+	EquippedTool = nullptr;
+}
+
+
+//DropTool fun
+void AJellyCharacterBase::Drop()
+{
+	if (!EquippedTool)
+	{
+		return;
+	}
+	
+	FVector DropDirection = FVector(0, 0, -1);
+	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
+	FRotator CharacterRotation = GetActorRotation();
+	FVector ForwardVector = FRotator(.0f, CharacterRotation.Yaw, .0f).Vector();
+	FVector ThrowStart = EquippedTool->GetActorLocation()+ (ForwardVector * 100.f);
+	EquippedTool->SetActorLocation(ThrowStart);
+	
+	EquippedTool->ToolMeshComponent->SetWorldScale3D(FVector(EquippedTool->WorldScale));
+	
+	EquippedTool->ToolMeshComponent->SetSimulatePhysics(true);
+	EquippedTool->ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	EquippedTool->ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
+	float LaunchForce = 50.f;
+	EquippedTool->ToolMeshComponent->AddImpulse(DropDirection * LaunchForce, NAME_None, true);
+	
+	EquippedTool = nullptr;
 
 }

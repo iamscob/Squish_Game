@@ -20,7 +20,7 @@ public:
 	// Sets default values for this actor's properties
 	APickupBase();
 	
-	void InitializePickup();
+	virtual void InitializePickup();
 
 protected:
 	// Called when the game starts or when spawned
@@ -48,16 +48,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Box Scale Multiplier")
 	float BoxScale = 1.5f;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Animation")
-	float RotationSpeed = 50.f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Animation")
-	float FloatingAmplitude = 20.f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup | Animation")
-	float FloatingSpeed = 2.f;
-	
-	float AnimStartOffsetZ;
+
 	
 	UFUNCTION()
 	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

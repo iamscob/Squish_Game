@@ -43,26 +43,14 @@ void APickupBase::BeginPlay()
 	PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	InitializePickup();
 	
-	AnimStartOffsetZ = GetActorLocation().Z;
+
 }
 
 // Called every frame
 void APickupBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (ReferenceItem && ReferenceItem->ItemType == EItemType::Consumable)
-	{
-		FRotator CurrentRotation = PickupMeshComponent->GetRelativeRotation();
-		CurrentRotation.Yaw += RotationSpeed * DeltaTime;
-		PickupMeshComponent->SetRelativeRotation(CurrentRotation);
-		float Time = GetWorld()->GetTimeSeconds();
-		float FloatingOffset = FMath::Sin(Time * FloatingSpeed) * FloatingAmplitude;
-		
-		FVector NewLocation = GetActorLocation();
-		NewLocation.Z = AnimStartOffsetZ + FloatingOffset;
-		SetActorLocation(NewLocation);
 	}
-}
 
 // Item Initialization Fun
 void APickupBase::InitializePickup()
@@ -111,19 +99,7 @@ void APickupBase::InitializePickup()
 	}
 	
 	PickupMeshComponent->SetVisibility(true);
-	if (ReferenceItem && ReferenceItem->ItemType == EItemType::Tool)
-	{
-		PickupMeshComponent->SetSimulatePhysics(true);
-		PickupMeshComponent->SetCollisionEnabled((ECollisionEnabled::QueryAndPhysics));
-		PickupMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
-		PickupMeshComponent->SetMassOverrideInKg(NAME_None,50.0f);
-	}
-	else
-	{
-		PickupMeshComponent->SetSimulatePhysics(false);
-		PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		PickupMeshComponent->SetCollisionProfileName(TEXT("OverlapAll"));
-	}
+
 
 
 	

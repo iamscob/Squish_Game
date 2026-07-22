@@ -34,11 +34,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UInputMappingContext> ToolMappingContext;
 	
-	UFUNCTION()
-	virtual void Use();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Scale")
+	float WorldScale = .7f;
+	
 	
 	UFUNCTION()
-	virtual void BindInputAction(const UInputAction* ActionToBind);
+	void ThrowTool(const FVector& LaunchDirection, float LaunchForce);
+	
+
 	
 protected:
 	// Called when the game starts or when spawned
