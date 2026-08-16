@@ -6,8 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
-class UEquippableToolDefinition;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class JELLY_API UInventoryComponent : public UActorComponent
 {
@@ -16,9 +14,7 @@ class JELLY_API UInventoryComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponent();
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category = "Tools")
-	TArray<TObjectPtr<UEquippableToolDefinition>> InventoryTool;
+
 	
 	
 protected:

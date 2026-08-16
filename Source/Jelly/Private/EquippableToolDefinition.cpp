@@ -3,8 +3,6 @@
 
 #include "EquippableToolDefinition.h"
 
-#include "Tools/UEdMode.h"
-
 UEquippableToolDefinition* UEquippableToolDefinition::CreateItemCopy(UObject* Outer) const
 {
 	if (!Outer)

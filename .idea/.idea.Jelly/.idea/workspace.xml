@@ -18,20 +18,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="36b90232-fbd7-4d8b-bff5-0946c74c700e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Materials/MI_Outline.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Materials/MI_Outline.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Input/Actions/IA_Use.uasset" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/Jelly/Private/JelloCombatComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Animations/ABP_Jello.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Animations/ABP_Jello.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Jello_PhysicsAsset.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Jello_PhysicsAsset.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Materials/M_JellyHero.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Materials/SSP_JellyHero.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Input/IMC_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Input/IMC_Default.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupBase.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupConsumable.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupConsumable.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupTool.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupTool.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/5/FQ/049UJG1EW2N0P2481I2WNI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/5/FQ/049UJG1EW2N0P2481I2WNI.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/A/65/SVM9PHS5J45A6OSF3H74BY.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/A/65/SVM9PHS5J45A6OSF3H74BY.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/Pickup/PickupBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/Pickup/PickupBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolDefinition.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolDefinition.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/InventoryComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/InventoryComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/ItemDefinition.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/ItemDefinition.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Pickup/PickupBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Pickup/PickupBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/InventoryComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/InventoryComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,67 +67,72 @@
     &quot;accountId&quot;: &quot;dd9e14fa-b6ab-408c-9b7a-98e8d951dede&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JelloCombatComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JelloCombatComponent.h" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0000000000021636" />
-      <entry key="S5" value="1.00004084369375" />
-      <entry key="S10" value="1.0110269592265895" />
-      <entry key="S30" value="1.4625787012301634" />
-      <entry key="S60" value="2.1791465047882377" />
-      <entry key="M2" value="3.0270114384812956" />
-      <entry key="M5" value="7.995278536813848" />
-      <entry key="M10" value="26.512101232129652" />
-      <entry key="M15" value="46.9392243826683" />
-      <entry key="M30" value="94.74509653229603" />
-      <entry key="H1" value="166.51553694231558" />
-      <entry key="H2" value="260.9654517232855" />
-      <entry key="H4" value="347.63474875194413" />
-      <entry key="D1" value="456.6490217389595" />
-      <entry key="W1" value="479.95999552812145" />
+      <entry key="MS500" value="1.0000867967169549" />
+      <entry key="S2" value="1.096560159778058" />
+      <entry key="S5" value="1.409710669212091" />
+      <entry key="S10" value="1.7670716049366983" />
+      <entry key="S30" value="2.6137257617219483" />
+      <entry key="S60" value="3.7223620422072186" />
+      <entry key="M2" value="6.958224973128263" />
+      <entry key="M5" value="19.42693001984362" />
+      <entry key="M10" value="35.37517787674643" />
+      <entry key="M15" value="49.311050776798595" />
+      <entry key="M30" value="97.52975371487095" />
+      <entry key="H1" value="211.2534372446853" />
+      <entry key="H2" value="456.45620403551726" />
+      <entry key="H4" value="913.1360863695463" />
+      <entry key="D1" value="2440.325445119839" />
+      <entry key="W1" value="3056.361703695702" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="4.960515288278733E-21" />
-      <entry key="MS500" value="8.696484282416154E-5" />
-      <entry key="S2" value="0.11376967864020168" />
-      <entry key="S5" value="0.6679630714160962" />
-      <entry key="S10" value="1.3600483808465238" />
-      <entry key="S30" value="2.4224860852379386" />
-      <entry key="S60" value="2.9896420896804736" />
-      <entry key="M2" value="3.4450229572501248" />
-      <entry key="M5" value="4.996198059669422" />
-      <entry key="M10" value="11.323552333345935" />
-      <entry key="M15" value="18.494698887496558" />
-      <entry key="M30" value="34.496498670914335" />
-      <entry key="H1" value="54.704922662266924" />
-      <entry key="H2" value="78.13334286358408" />
-      <entry key="H4" value="98.59549485889173" />
-      <entry key="D1" value="123.74983310255945" />
-      <entry key="W1" value="129.0779730658829" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="1.9897731540879838E-114" />
+      <entry key="S2" value="5.488100509622038E-29" />
+      <entry key="S5" value="7.457785662580516E-12" />
+      <entry key="S10" value="4.297016576620723E-6" />
+      <entry key="S30" value="0.057297424492208225" />
+      <entry key="S60" value="0.8802013748508826" />
+      <entry key="M2" value="4.04158982359431" />
+      <entry key="M5" value="12.431498377581907" />
+      <entry key="M10" value="20.504386244495386" />
+      <entry key="M15" value="27.23980201822658" />
+      <entry key="M30" value="52.02012956273179" />
+      <entry key="H1" value="109.24286530166349" />
+      <entry key="H2" value="214.32137484764903" />
+      <entry key="H4" value="380.89081901275785" />
+      <entry key="D1" value="870.9012461371387" />
+      <entry key="W1" value="1058.1237990162224" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="3.310371961286663E-14" />
-      <entry key="MS500" value="0.0020488616922646474" />
-      <entry key="S2" value="0.2960044129894121" />
-      <entry key="S5" value="1.0918406588056901" />
-      <entry key="S10" value="1.9624360541472068" />
-      <entry key="S30" value="3.684858982988662" />
-      <entry key="S60" value="5.049419068133615" />
-      <entry key="M2" value="6.403692321215756" />
-      <entry key="M5" value="12.946945193867784" />
-      <entry key="M10" value="37.782476241761344" />
-      <entry key="M15" value="65.3764716865994" />
-      <entry key="M30" value="129.18848203890906" />
-      <entry key="H1" value="221.1773431036098" />
-      <entry key="H2" value="339.0669202900117" />
-      <entry key="H4" value="446.2096567739884" />
-      <entry key="D1" value="580.3944561636599" />
-      <entry key="W1" value="609.0373107408651" />
+      <entry key="MS100" value="0.0021225290283712066" />
+      <entry key="MS500" value="0.2919947196836052" />
+      <entry key="S2" value="0.7762770881745331" />
+      <entry key="S5" value="1.1766248160076056" />
+      <entry key="S10" value="1.59260292779865" />
+      <entry key="S30" value="2.57198206026047" />
+      <entry key="S60" value="4.517899619608016" />
+      <entry key="M2" value="10.904958432536079" />
+      <entry key="M5" value="31.761425129900516" />
+      <entry key="M10" value="55.80160783602039" />
+      <entry key="M15" value="76.48411467065371" />
+      <entry key="M30" value="149.4923856498816" />
+      <entry key="H1" value="320.43976535391437" />
+      <entry key="H2" value="670.7207803976542" />
+      <entry key="H4" value="1293.972242098143" />
+      <entry key="D1" value="3311.2029015034414" />
+      <entry key="W1" value="4114.481260605124" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -254,16 +265,42 @@
       <workItem from="1783862539677" duration="285000" />
       <workItem from="1784618285765" duration="2206000" />
       <workItem from="1784620646892" duration="5820000" />
-      <workItem from="1784718653492" duration="1529000" />
+      <workItem from="1784718653492" duration="12808000" />
+      <workItem from="1785231356002" duration="12814000" />
+      <workItem from="1785839514300" duration="17733000" />
+      <workItem from="1786019523611" duration="2549000" />
+      <workItem from="1786280082463" duration="8871000" />
+      <workItem from="1786876759435" duration="6745000" />
     </task>
+    <task id="LOCAL-00001" summary="CORE CHANGES: tool throwing + splitting pickups into Consumables/Tools&#10;&#10;PICKUPS UPDATES:&#10;- Throwing in the character's facing direction with ThrowingTool size restoration&#10;- Consumables: added animation : rotation and levitation (no physics)&#10;- Tools: physics (falling, bouncing)&#10;- Outline Material for pickups added&#10;&#10;OTHER FIXES:&#10;- Fixed some bugs that caused editor crashes &#10;- Removed Pickups respawn logic">
+      <option name="closed" value="true" />
+      <created>1784720616651</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1784720616651</updated>
+    </task>
+    <task id="LOCAL-00002" summary="+">
+      <option name="closed" value="true" />
+      <created>1784720628849</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1784720628849</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="CORE CHANGES: tool throwing + splitting pickups into Consumables/Tools&#10;&#10;PICKUPS UPDATES:&#10;- Throwing in the character's facing direction with ThrowingTool size restoration&#10;- Consumables: added animation : rotation and levitation (no physics)&#10;- Tools: physics (falling, bouncing)&#10;- Outline Material for pickups added&#10;&#10;OTHER FIXES:&#10;- Fixed some bugs that caused editor crashes &#10;- Removed Pickups respawn logic" />
+    <MESSAGE value="+" />
+    <option name="LAST_COMMIT_MESSAGE" value="+" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -3,10 +3,14 @@
 
 #include "JellyCharacterBase.h"
 #include "EnhancedInputSubsystems.h"
-#include "Animation/AnimBlueprint.h"
+
 #include "InventoryComponent.h"
+#include "JellyStatusComponent.h"
+#include "JelloCombatComponent.h"
 #include "EquippableToolBase.h"
 #include "EquippableToolDefinition.h"
+
+
 
 
 
@@ -14,7 +18,7 @@
 AJellyCharacterBase::AJellyCharacterBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	// Setting Camera Boom Up
 	CameraBoom=CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -31,8 +35,10 @@ AJellyCharacterBase::AJellyCharacterBase()
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->FieldOfView = FieldOfView;
 	
-	// Setting Up Inventory Component
+	// Setting Up Components
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	StatusComponent = CreateDefaultSubobject<UJellyStatusComponent>(TEXT("StatusComponent"));
+	CombatComponent = CreateDefaultSubobject<UJelloCombatComponent>(TEXT("CombatComponent"));
 	
 
 }
@@ -47,12 +53,13 @@ void AJellyCharacterBase::BeginPlay()
 	
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(ThirdPersonContext, 0);
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Black, TEXT("We're using JelloCharacter now."));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Black, TEXT("We're using Jello now."));
 }
 
 // Called every frame
@@ -74,6 +81,7 @@ void AJellyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		
 		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Throw);
 		EnhancedInputComponent->BindAction(DropAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Drop);
+		EnhancedInputComponent->BindAction(MeleeAction,ETriggerEvent::Started,this, &AJellyCharacterBase::MeleeAttack);
 	}
 	
 }
@@ -108,77 +116,57 @@ void AJellyCharacterBase::Look(const FInputActionValue& Value)
 	}
 }
 
-
-	// Check if tool is already owned
-bool AJellyCharacterBase::IsToolAlreadyOwned(UEquippableToolDefinition* ToolDefinition)
-{
-	for (UEquippableToolDefinition* InventoryItem : InventoryComponent->InventoryTool)
-	{
-		if (ToolDefinition->ID.EqualTo(InventoryItem->ID))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-
 	// Tool Attachment
 bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 {
-	
-	if (!IsToolAlreadyOwned(ToolDefinition))
-	{
-		
-		AEquippableToolBase* ToolToEquip = GetWorld()->SpawnActor<AEquippableToolBase>(ToolDefinition->ToolAsset, this->GetActorTransform());
-		if (!ToolToEquip)
-		{
+	if (!ToolDefinition) return false;
+	if (EquippedTool) return false;
+	if (!ToolDefinition->ToolAsset) return false;
+	UWorld* World = GetWorld();
+	if (!World) return false;
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	SpawnParameters.Instigator = this;
+	AEquippableToolBase* ToolToEquip = World->SpawnActor<AEquippableToolBase>
+	(ToolDefinition->ToolAsset,
+		GetActorTransform(),
+		SpawnParameters);
+	if (!ToolToEquip) return false;
 			
-			return false;
-		}
-		
-		
 		UStaticMesh* ToolMesh = ToolDefinition->ToolMesh.IsValid()
 		? ToolDefinition->ToolMesh.Get()
 		: ToolDefinition->ToolMesh.LoadSynchronous();
 
-		if (ToolMesh && ToolToEquip->ToolMeshComponent)
+		if (!ToolMesh || !ToolToEquip->ToolMeshComponent)
 		{
-			ToolToEquip->ToolMeshComponent->SetStaticMesh(ToolMesh);
-			
+			ToolToEquip->Destroy();
+			return false;
 		}
-		else
-		{
-			
-		}
+	ToolToEquip->ToolMeshComponent->SetStaticMesh(ToolMesh);
+	
+	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	
 		
-		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 		ToolToEquip->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("RightHandIndex3")));
 		ToolToEquip->ToolMeshComponent->SetRelativeScale3D(FVector(2.f,2.f,2.f));
-		
-		
-		
-		InventoryComponent->InventoryTool.Add(ToolDefinition);
+	
 		ToolToEquip->OwningCharacter = this;
 		EquippedTool = ToolToEquip;
 
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 		{
-			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+				ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 			{
-				Subsystem->AddMappingContext((ToolToEquip->ToolMappingContext),1);
+				if (ToolToEquip->ToolMappingContext){
+					Subsystem->AddMappingContext((ToolToEquip->ToolMappingContext),1);
+				}
 			}
 		}
 		return true;
 	}
-	else
-	{
-		
-		return false;
-	}
-}
 
-// PickUps separation
+// PickUps Separation
 bool AJellyCharacterBase::GiveItem(UItemDefinition* ItemDefinition)
 {
 	
@@ -215,7 +203,25 @@ bool AJellyCharacterBase::GiveItem(UItemDefinition* ItemDefinition)
 	
 }
 
+void AJellyCharacterBase::RemoveToolMappingContext(AEquippableToolBase* Tool)
+{
+	{
+		if (!Tool || !Tool->ToolMappingContext) return;
+	}
 
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if (!PlayerController) return;
+	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	if (!LocalPlayer) return;
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::
+	GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+	if (!Subsystem) return;
+	Subsystem->RemoveMappingContext(Tool->ToolMappingContext);
+}
+
+	
+	
+	
 // Throw Tool fun
 void AJellyCharacterBase::Throw()
 {
@@ -224,10 +230,14 @@ void AJellyCharacterBase::Throw()
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("NoTool"));
 		return;
 	}
+	RemoveToolMappingContext(EquippedTool);
 	FRotator CharacterRotator = GetActorRotation();
 	FRotator ThrowRotator(0.f, CharacterRotator.Yaw,0.f);
 	FVector ThrowDirection = ThrowRotator.Vector();
 
+	EquippedTool->Thrower = this;
+	EquippedTool->bThrowerWasChasing = StatusComponent && StatusComponent->IsChasing();
+	
 	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	
 	FVector ThrowStart = EquippedTool->GetActorLocation() + (ThrowDirection * 150.f);
@@ -247,13 +257,14 @@ void AJellyCharacterBase::Throw()
 }
 
 
-//DropTool fun
+//DropTool Function
 void AJellyCharacterBase::Drop()
 {
 	if (!EquippedTool)
 	{
 		return;
 	}
+	RemoveToolMappingContext(EquippedTool);
 	
 	FVector DropDirection = FVector(0, 0, -1);
 	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
@@ -274,3 +285,13 @@ void AJellyCharacterBase::Drop()
 	EquippedTool = nullptr;
 
 }
+
+void AJellyCharacterBase::MeleeAttack()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->MeleeAttack();
+	}
+}
+
+

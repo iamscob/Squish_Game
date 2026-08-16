@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "JellyCharacterBase.generated.h"
 
+
 class UAnimBlueprint;
 class UInputMappingContext;
 class UInputAction;
@@ -19,6 +20,8 @@ class UItemDefinition;
 class UEquippableToolDefinition;
 class AEquippableToolBase;
 class UInventoryComponent;
+class UJellyStatusComponent;
+class UJelloCombatComponent;
 
 UCLASS()
 class JELLY_API AJellyCharacterBase : public ACharacter
@@ -28,7 +31,7 @@ class JELLY_API AJellyCharacterBase : public ACharacter
 public: 
 	// Sets default values for this character's properties
 	AJellyCharacterBase();
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -53,24 +56,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Input")
 	TObjectPtr<UInputAction> DropAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Input")
+	TObjectPtr<UInputAction> MeleeAction;
+	
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tools")
 	TObjectPtr<AEquippableToolBase> EquippedTool;
-
-	
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	UFUNCTION()
-	void Move(const FInputActionValue& Value);
-	
-	UFUNCTION()
-	void Look(const FInputActionValue& Value);
 	
 	
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -93,8 +84,39 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
+	TObjectPtr<UJellyStatusComponent> StatusComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
+	TObjectPtr<UJelloCombatComponent> CombatComponent;
+
+
+private:
+
+	void RemoveToolMappingContext(AEquippableToolBase* Tool);
+	
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
 	UFUNCTION()
-	bool IsToolAlreadyOwned(UEquippableToolDefinition* ToolDefinition);
+	void Move(const FInputActionValue& Value);
+	
+	UFUNCTION()
+	void Look(const FInputActionValue& Value);
+	
+	UFUNCTION()
+	void Throw();
+	
+	UFUNCTION()
+	void Drop();
+	
+	UFUNCTION()
+	void MeleeAttack();
 	
 	UFUNCTION()
 	bool AttachTool(UEquippableToolDefinition* ToolDefinition);
@@ -102,9 +124,10 @@ public:
 	UFUNCTION()
 	bool GiveItem(UItemDefinition* ItemDefinition);
 	
-	UFUNCTION()
-	void Throw();
 	
-	UFUNCTION()
-	void Drop();
+	
+
+
+	
+
 };

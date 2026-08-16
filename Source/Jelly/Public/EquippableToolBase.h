@@ -37,15 +37,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Scale")
 	float WorldScale = .7f;
 	
+	UPROPERTY()
+	bool bThrowerWasChasing = false;
 	
+	
+	
+	UPROPERTY()
+	TObjectPtr<AJellyCharacterBase> Thrower;
+		
 	UFUNCTION()
-	void ThrowTool(const FVector& LaunchDirection, float LaunchForce);
+	void OnToolHit(
+		UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
+		FVector NormalImpulse, const FHitResult& HitResult
+		);
 	
+private:
+	UPROPERTY()
+		bool bHasProcessedHit = false;
 
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	
 
 public:	
 	// Called every frame

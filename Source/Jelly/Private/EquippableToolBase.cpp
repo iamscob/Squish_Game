@@ -4,12 +4,13 @@
 #include "EquippableToolBase.h"
 #include "Character/JellyCharacterBase.h"
 #include "InputMappingContext.h"
+#include "JellyStatusComponent.h"
 
 // Sets default values
 AEquippableToolBase::AEquippableToolBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	ToolMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ToolMesh"));
 	check(ToolMeshComponent!=nullptr);
@@ -17,6 +18,9 @@ AEquippableToolBase::AEquippableToolBase()
 	
 	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ToolMeshComponent->SetGenerateOverlapEvents(false);
+	
+	ToolMeshComponent->SetNotifyRigidBodyCollision(true);
+	ToolMeshComponent->OnComponentHit.AddDynamic(this, &AEquippableToolBase::OnToolHit);
 }
 
 // Called when the game starts or when spawned
@@ -33,16 +37,32 @@ void AEquippableToolBase::Tick(float DeltaTime)
 
 }
 
-
-void AEquippableToolBase::ThrowTool(const FVector& LaunchDirection, float LaunchForce)
+void AEquippableToolBase::OnToolHit(
+	UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
+	FVector NormalImpulse, const FHitResult& HitResult
+	)
 {
-	if (!ToolMeshComponent) return;
+	if (bHasProcessedHit || !Thrower || !OtherActor) return;
 	
-	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	AJellyCharacterBase* HitCharacter = Cast<AJellyCharacterBase>(OtherActor);
 	
-	ToolMeshComponent->SetSimulatePhysics(true);
-	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
+	if (!HitCharacter || HitCharacter == Thrower) return;
 	
-	ToolMeshComponent->AddImpulse(LaunchDirection * LaunchForce,NAME_None, true);
+	UJellyStatusComponent* HitStatus = HitCharacter->FindComponentByClass<UJellyStatusComponent>();
+	
+	if (!HitStatus) return;
+	
+	FVector HitDirection = -NormalImpulse.GetSafeNormal();
+	if (HitDirection.IsNearlyZero())
+	{
+		HitDirection = -HitResult.ImpactNormal.GetSafeNormal();
+	}
+	const bool bHitApplied = HitStatus->ApplyHit(Thrower, HitDirection, true);
+	if (!bHitApplied) return;
+	bHasProcessedHit = true;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,TEXT("Throw Hit"));
+	Destroy();
 }
+	
+
+
