@@ -16,10 +16,7 @@ class JELLY_API UJellyStatusComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UJellyStatusComponent();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Status")
-	bool bIsChasing = false;
-	
+		
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Status")
 	bool bIsStunned = false;
 	

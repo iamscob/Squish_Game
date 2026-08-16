@@ -4,6 +4,8 @@
 #include "Character/JellyCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "JellyPlayerState.h"
+#include "JellyGameModeBase.h"
 
 // Sets default values for this component's properties
 UJellyStatusComponent::UJellyStatusComponent()
@@ -36,43 +38,54 @@ void UJellyStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UJellyStatusComponent::SetIsChasing(bool bNewIsChasing)
 {
-	bIsChasing = bNewIsChasing;
-	AJellyCharacterBase* OwnerCharater = Cast<AJellyCharacterBase>(GetOwner());
-	if (!OwnerCharater) return;
-	if  (bIsChasing)
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+	if (!OwnerCharacter) return;
+	AJellyPlayerState* PlayerState = OwnerCharacter->GetPlayerState<AJellyPlayerState>();
+	if (!PlayerState) return;
+	PlayerState->SetIsChaser(bNewIsChasing);
+	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,TEXT("Chasing"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,TEXT("I'm NOT chasing"));		
+		const FString StatusMessage = bNewIsChasing ? TEXT("Chasing")
+			: TEXT("NotChasing");
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, bNewIsChasing ? FColor::Red
+			:FColor::Green, StatusMessage);
 	}
 }
 
 bool UJellyStatusComponent::ApplyHit(AJellyCharacterBase* Attacker, const FVector& HitDirection, bool bIsThrownHit)
-
 	{
-		AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
-		if (!OwnerCharacter || !Attacker || bIsStunned) return false;
-	UJellyStatusComponent* AttackerStatus = Attacker->FindComponentByClass<UJellyStatusComponent>();
-		if (!AttackerStatus) return false;
-		UJellyStatusComponent* OwnerStatus = this;
-		
+	
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+	if (!OwnerCharacter || !Attacker || bIsStunned) return false;
+	
+UJellyStatusComponent* AttackerStatus = Attacker->FindComponentByClass<UJellyStatusComponent>();
+	if (!AttackerStatus) return false;
+	
+	UJellyStatusComponent* OwnerStatus = this;
+	
+	const bool bAttackerIsChaser = AttackerStatus->IsChasing();
+	const bool bOwnerIsChaser = OwnerStatus->IsChasing();
+	
 		float StunDuration = 2.f;
 
 		// If Chasing Player Attacks -> Running Player
-		if (AttackerStatus->IsChasing() && !OwnerStatus->IsChasing())
+		if (bAttackerIsChaser && !bOwnerIsChaser)
 		{
-			StunDuration = 2.5f; 
-			AttackerStatus->SetIsChasing(false);
-			OwnerStatus->SetIsChasing(true);
-		
+		AJellyGameModeBase* JellyGameMode = GetWorld()->GetAuthGameMode<AJellyGameModeBase>();
+			
+			if (!JellyGameMode)return false;
+			
+			const bool bRoleTransfered = JellyGameMode->TryTransferChaser(Attacker,OwnerCharacter);
+			
+			if (!bRoleTransfered) return false;
+			
+		StunDuration = 2.5f;
 		} // Running -> Chasing
-		else if (!AttackerStatus->IsChasing() && OwnerStatus->IsChasing())
+		else if (!bAttackerIsChaser && bOwnerIsChaser)
 		{
 			StunDuration = 1.8f;
 		} // Running -> Running
-		else if (!AttackerStatus->IsChasing() && !OwnerStatus->IsChasing())
+		else if (!bAttackerIsChaser && !bOwnerIsChaser)
 		{
 			StunDuration = 1.3f;
 		} // Default
@@ -136,5 +149,9 @@ void UJellyStatusComponent::RecoverFromStun()
 
 bool UJellyStatusComponent::IsChasing() const
 {
-	return bIsChasing;
+	const AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+	if (!OwnerCharacter) return false;
+	const AJellyPlayerState* PlayerState = OwnerCharacter->GetPlayerState<AJellyPlayerState>();
+	if (!PlayerState) return false;
+	return PlayerState->IsChaser();
 }

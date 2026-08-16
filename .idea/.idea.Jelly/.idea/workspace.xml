@@ -18,26 +18,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="36b90232-fbd7-4d8b-bff5-0946c74c700e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/Jelly/Private/JelloCombatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Animations/ABP_Jello.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Animations/ABP_Jello.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Jello_PhysicsAsset.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Jello_PhysicsAsset.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Materials/M_JellyHero.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Materials/SSP_JellyHero.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Input/IMC_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Input/IMC_Default.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupConsumable.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupConsumable.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupTool.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupTool.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/5/FQ/049UJG1EW2N0P2481I2WNI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/5/FQ/049UJG1EW2N0P2481I2WNI.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/A/65/SVM9PHS5J45A6OSF3H74BY.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/A/65/SVM9PHS5J45A6OSF3H74BY.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolDefinition.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolDefinition.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/InventoryComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/InventoryComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/ItemDefinition.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/ItemDefinition.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/InventoryComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/InventoryComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Lvl_ThirdPerson.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Lvl_ThirdPerson.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +52,11 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JelloCombatComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyGameStateBase.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JelloCombatComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyGameModeBase.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyGameStateBase.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="McpProjectServerCommands">
     <commands />
@@ -78,61 +65,61 @@
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000867967169549" />
-      <entry key="S2" value="1.096560159778058" />
-      <entry key="S5" value="1.409710669212091" />
-      <entry key="S10" value="1.7670716049366983" />
-      <entry key="S30" value="2.6137257617219483" />
-      <entry key="S60" value="3.7223620422072186" />
-      <entry key="M2" value="6.958224973128263" />
-      <entry key="M5" value="19.42693001984362" />
-      <entry key="M10" value="35.37517787674643" />
-      <entry key="M15" value="49.311050776798595" />
-      <entry key="M30" value="97.52975371487095" />
-      <entry key="H1" value="211.2534372446853" />
-      <entry key="H2" value="456.45620403551726" />
-      <entry key="H4" value="913.1360863695463" />
-      <entry key="D1" value="2440.325445119839" />
-      <entry key="W1" value="3056.361703695702" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="7.469639141138002E-69" />
+      <entry key="S2" value="9.444223266810973E-18" />
+      <entry key="S5" value="3.075281955148605E-7" />
+      <entry key="S10" value="0.002259770666833917" />
+      <entry key="S30" value="1.1738555670814954" />
+      <entry key="S60" value="5.886308927280427" />
+      <entry key="M2" value="15.186999644956492" />
+      <entry key="M5" value="46.70813115960042" />
+      <entry key="M10" value="104.56062259334384" />
+      <entry key="M15" value="160.49122952021116" />
+      <entry key="M30" value="309.3935508556676" />
+      <entry key="H1" value="544.0236408994576" />
+      <entry key="H2" value="902.1732402278129" />
+      <entry key="H4" value="1463.0526938278701" />
+      <entry key="D1" value="3413.3573716277347" />
+      <entry key="W1" value="4275.599736928452" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="1.9897731540879838E-114" />
-      <entry key="S2" value="5.488100509622038E-29" />
-      <entry key="S5" value="7.457785662580516E-12" />
-      <entry key="S10" value="4.297016576620723E-6" />
-      <entry key="S30" value="0.057297424492208225" />
-      <entry key="S60" value="0.8802013748508826" />
-      <entry key="M2" value="4.04158982359431" />
-      <entry key="M5" value="12.431498377581907" />
-      <entry key="M10" value="20.504386244495386" />
-      <entry key="M15" value="27.23980201822658" />
-      <entry key="M30" value="52.02012956273179" />
-      <entry key="H1" value="109.24286530166349" />
-      <entry key="H2" value="214.32137484764903" />
-      <entry key="H4" value="380.89081901275785" />
-      <entry key="D1" value="870.9012461371387" />
-      <entry key="W1" value="1058.1237990162224" />
+      <entry key="MS100" value="1.000000006178912" />
+      <entry key="MS500" value="1.0228130001664768" />
+      <entry key="S2" value="1.3886383028263463" />
+      <entry key="S5" value="1.685201435565284" />
+      <entry key="S10" value="1.827984485163531" />
+      <entry key="S30" value="2.025697094000104" />
+      <entry key="S60" value="2.471742443743941" />
+      <entry key="M2" value="4.514581130089277" />
+      <entry key="M5" value="16.84675170515429" />
+      <entry key="M10" value="42.34623568545171" />
+      <entry key="M15" value="67.96664625760305" />
+      <entry key="M30" value="133.77080361312682" />
+      <entry key="H1" value="228.9907139429148" />
+      <entry key="H2" value="370.14886953496017" />
+      <entry key="H4" value="582.497525137404" />
+      <entry key="D1" value="1243.513470985421" />
+      <entry key="W1" value="1517.670659197058" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.0021225290283712066" />
-      <entry key="MS500" value="0.2919947196836052" />
-      <entry key="S2" value="0.7762770881745331" />
-      <entry key="S5" value="1.1766248160076056" />
-      <entry key="S10" value="1.59260292779865" />
-      <entry key="S30" value="2.57198206026047" />
-      <entry key="S60" value="4.517899619608016" />
-      <entry key="M2" value="10.904958432536079" />
-      <entry key="M5" value="31.761425129900516" />
-      <entry key="M10" value="55.80160783602039" />
-      <entry key="M15" value="76.48411467065371" />
-      <entry key="M30" value="149.4923856498816" />
-      <entry key="H1" value="320.43976535391437" />
-      <entry key="H2" value="670.7207803976542" />
-      <entry key="H4" value="1293.972242098143" />
-      <entry key="D1" value="3311.2029015034414" />
-      <entry key="W1" value="4114.481260605124" />
+      <entry key="MS100" value="2.8560464616640606E-7" />
+      <entry key="MS500" value="0.05917308409238794" />
+      <entry key="S2" value="0.787507560216271" />
+      <entry key="S5" value="1.3711851249979463" />
+      <entry key="S10" value="1.6570462972495688" />
+      <entry key="S30" value="3.1220352420849786" />
+      <entry key="S60" value="8.288730663403514" />
+      <entry key="M2" value="19.629772511574114" />
+      <entry key="M5" value="63.46178230250868" />
+      <entry key="M10" value="146.7920398730894" />
+      <entry key="M15" value="228.3318398163093" />
+      <entry key="M30" value="443.03023986277066" />
+      <entry key="H1" value="772.8902488074164" />
+      <entry key="H2" value="1272.2172276924089" />
+      <entry key="H4" value="2045.4649073919707" />
+      <entry key="D1" value="4656.837777336954" />
+      <entry key="W1" value="5793.26448793664" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -270,7 +257,7 @@
       <workItem from="1785839514300" duration="17733000" />
       <workItem from="1786019523611" duration="2549000" />
       <workItem from="1786280082463" duration="8871000" />
-      <workItem from="1786876759435" duration="6745000" />
+      <workItem from="1786876759435" duration="17826000" />
     </task>
     <task id="LOCAL-00001" summary="CORE CHANGES: tool throwing + splitting pickups into Consumables/Tools&#10;&#10;PICKUPS UPDATES:&#10;- Throwing in the character's facing direction with ThrowingTool size restoration&#10;- Consumables: added animation : rotation and levitation (no physics)&#10;- Tools: physics (falling, bouncing)&#10;- Outline Material for pickups added&#10;&#10;OTHER FIXES:&#10;- Fixed some bugs that caused editor crashes &#10;- Removed Pickups respawn logic">
       <option name="closed" value="true" />
@@ -288,7 +275,23 @@
       <option name="project" value="LOCAL" />
       <updated>1784720628849</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="*refactor(gameplay): stabilize character combat and tool handling*&#10;&#10;-create inventory, status, and combat components in the character constructor&#10;-centralize the chaser state in JellyStatusComponent&#10;-simplify tool ownership to a single equipped tool&#10;-add safe hit validation and prevent duplicate hit processing&#10;-calculate thrown-tool knockback from collision impulse&#10;-remove tool input mapping contexts after throw and drop&#10;-remove unused ticking, duplicate includes, and editor-only dependencies">
+      <option name="closed" value="true" />
+      <created>1786884130140</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1786884130140</updated>
+    </task>
+    <task id="LOCAL-00004" summary="up">
+      <option name="closed" value="true" />
+      <created>1786884163036</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1786884163036</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -300,7 +303,9 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="CORE CHANGES: tool throwing + splitting pickups into Consumables/Tools&#10;&#10;PICKUPS UPDATES:&#10;- Throwing in the character's facing direction with ThrowingTool size restoration&#10;- Consumables: added animation : rotation and levitation (no physics)&#10;- Tools: physics (falling, bouncing)&#10;- Outline Material for pickups added&#10;&#10;OTHER FIXES:&#10;- Fixed some bugs that caused editor crashes &#10;- Removed Pickups respawn logic" />
     <MESSAGE value="+" />
-    <option name="LAST_COMMIT_MESSAGE" value="+" />
+    <MESSAGE value="*refactor(gameplay): stabilize character combat and tool handling*&#10;&#10;-create inventory, status, and combat components in the character constructor&#10;-centralize the chaser state in JellyStatusComponent&#10;-simplify tool ownership to a single equipped tool&#10;-add safe hit validation and prevent duplicate hit processing&#10;-calculate thrown-tool knockback from collision impulse&#10;-remove tool input mapping contexts after throw and drop&#10;-remove unused ticking, duplicate includes, and editor-only dependencies" />
+    <MESSAGE value="up" />
+    <option name="LAST_COMMIT_MESSAGE" value="up" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
