@@ -12,8 +12,8 @@ UJelloCombatComponent::UJelloCombatComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false
-	;
+	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicated(true);
 
 	// ...
 }
@@ -38,7 +38,21 @@ void UJelloCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 }
 
 //Melee Attack Fun
+
 void UJelloCombatComponent::MeleeAttack()
+{
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+
+	if (!OwnerCharacter) return;
+	if (OwnerCharacter->HasAuthority())
+	{
+		PerformMeleeAttack();
+		return;
+	}
+	ServerMeleeAttack();
+}
+
+void UJelloCombatComponent::PerformMeleeAttack()
 {
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
 	if (!OwnerCharacter) return;
@@ -99,6 +113,11 @@ void UJelloCombatComponent::MeleeAttack()
 			
 		}
 	}
+}
+
+void UJelloCombatComponent::ServerMeleeAttack_Implementation()
+{
+	PerformMeleeAttack();
 }
 
 

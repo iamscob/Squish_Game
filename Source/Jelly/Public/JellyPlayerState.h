@@ -16,15 +16,21 @@ class JELLY_API AJellyPlayerState : public APlayerState
 	
 public:
 	
+	
+	UFUNCTION(BlueprintPure, Category = "Jelly|Player")
+	uint8 GetPlayerColorIndex() const;
+	
+	
 	UFUNCTION(BlueprintPure, Category = "Jelly|Round")
 	bool IsChaser() const;
 	
 	UFUNCTION(BlueprintPure, Category = "Jelly|Round")
-	int32 GetPenaltyPoints() const;
+	int32 GetChaserTime() const;
 	
 	void SetIsChaser(bool bIsNewChaser);
-	void AddPenaltyPoint();
-	void ResetPenaltyPoints();
+	void AddChaserTime(float Seconds);
+	void ResetChaserTime();
+	void SetPlayerColorIndex(uint8 NewColorIndex);
 	
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
@@ -32,10 +38,17 @@ protected:
 private:
 	
 	UPROPERTY(Replicated,VisibleAnywhere,BlueprintReadOnly,Category = "Jelly|Round", meta = (AllowPrivateAccess = "true"))
-	bool bIsChaser;
+	bool bIsChaser = false;
 	
 	UPROPERTY(Replicated,VisibleAnywhere,BlueprintReadOnly,Category = "Jelly|Round", meta = (AllowPrivateAccess = "true"))
-	int32 PenaltyPoints = 0;
+	float ChaserTimeSeconds = 0;
+	
+	
+	UPROPERTY(ReplicatedUsing=OnRep_PlayerColorIndex,VisibleAnywhere, BlueprintReadOnly, Category = "Jelly|Player", meta=(AllowPrivateAccess = "true"))
+	uint8 PlayerColorIndex = 255;
+	
+	UFUNCTION()
+	void OnRep_PlayerColorIndex();
 };
 
 

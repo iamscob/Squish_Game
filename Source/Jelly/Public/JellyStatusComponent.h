@@ -17,7 +17,7 @@ public:
 	// Sets default values for this component's properties
 	UJellyStatusComponent();
 		
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Status")
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category= "Status")
 	bool bIsStunned = false;
 	
 
@@ -26,13 +26,27 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Ragdoll")
+	float RagdollBlendDuration = .2f;
+	
 private:
 	
 	FTimerHandle StunTimerHandle;
+	FTimerHandle RagdollBlendTimerHandle;
 	
 	FVector PreRagdollLocation;
 	FRotator PreRagdollRotation;
 
+	
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastStartRagdoll(FVector HitDirection, float KnockbackForce);
+	
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastRecoverFromStun(FVector RecoveryLocation);
+
+	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "JellyPlayerState.h"
 #include "JellyGameModeBase.h"
+#include "Net\UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UJellyStatusComponent::UJellyStatusComponent()
@@ -13,6 +14,7 @@ UJellyStatusComponent::UJellyStatusComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 
 	// ...
 }
@@ -54,7 +56,10 @@ void UJellyStatusComponent::SetIsChasing(bool bNewIsChasing)
 
 bool UJellyStatusComponent::ApplyHit(AJellyCharacterBase* Attacker, const FVector& HitDirection, bool bIsThrownHit)
 	{
-	
+		if (!GetOwner() || !GetOwner()->HasAuthority())
+		{
+			return false;
+		}
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
 	if (!OwnerCharacter || !Attacker || bIsStunned) return false;
 	
@@ -95,24 +100,9 @@ UJellyStatusComponent* AttackerStatus = Attacker->FindComponentByClass<UJellySta
 		}
 		bIsStunned = true;
 	
-		//Ragdoll 
+		const float KnockbackForce = bIsThrownHit ? 5000.f : 2800.f;
 	
-		PreRagdollLocation = OwnerCharacter->GetActorLocation();
-		PreRagdollRotation = OwnerCharacter->GetActorRotation();
-	
-		OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		OwnerCharacter->GetMesh()->SetSimulatePhysics(true);
-		OwnerCharacter->GetMesh()->SetAllBodiesSimulatePhysics(true);
-		OwnerCharacter->GetCharacterMovement()->DisableMovement();
-	
-	
-		//Knockback
-		FVector KnockbackDirection = HitDirection.GetSafeNormal();
-		KnockbackDirection.Z = .8f;
-	
-		float KnockbackForce = bIsThrownHit ? 5000.f : 2800.f;
-		OwnerCharacter->GetMesh()->AddImpulse(KnockbackDirection * KnockbackForce, NAME_None, true);
+		MulticastStartRagdoll(HitDirection, KnockbackForce);
 	
 		OwnerCharacter->GetWorldTimerManager().SetTimer(
 			StunTimerHandle,this,&UJellyStatusComponent::RecoverFromStun,
@@ -124,27 +114,14 @@ UJellyStatusComponent* AttackerStatus = Attacker->FindComponentByClass<UJellySta
 void UJellyStatusComponent::RecoverFromStun()
 {
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
-	if (!OwnerCharacter) return;
+	if (!OwnerCharacter || !OwnerCharacter->HasAuthority()) return;
+	
+	const FVector RecoveryLocation = OwnerCharacter->GetMesh()->GetComponentLocation();
 	
 	bIsStunned = false;
 	
-	OwnerCharacter->GetMesh()->SetSimulatePhysics(false);
-	OwnerCharacter->GetMesh()->SetAllBodiesSimulatePhysics(false);
-	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MulticastRecoverFromStun(RecoveryLocation);
 	
-	OwnerCharacter->GetMesh()->AttachToComponent(
-		OwnerCharacter->GetCapsuleComponent(),
-		FAttachmentTransformRules::KeepWorldTransform
-	);
-	OwnerCharacter->GetCapsuleComponent()->SetWorldLocation(OwnerCharacter->GetMesh()->GetComponentLocation());
-	
-	OwnerCharacter->GetMesh()->SetRelativeLocationAndRotation(
-		FVector(0.f, 0.f, -100.f),
-		FRotator(0.f, -90.f, 0.f)
-	);
-
-	OwnerCharacter->GetCharacterMovement()->Velocity = FVector::ZeroVector;
-	OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
 
 bool UJellyStatusComponent::IsChasing() const
@@ -155,3 +132,61 @@ bool UJellyStatusComponent::IsChasing() const
 	if (!PlayerState) return false;
 	return PlayerState->IsChaser();
 }
+
+void UJellyStatusComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(UJellyStatusComponent, bIsStunned);
+}
+
+void UJellyStatusComponent::MulticastStartRagdoll_Implementation(FVector HitDirection, float KnockbackForce)
+{
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+	if (!OwnerCharacter || !GetWorld()) return;
+	GetWorld()->GetTimerManager().ClearTimer(RagdollBlendTimerHandle);
+	
+	PreRagdollLocation = OwnerCharacter->GetActorLocation();
+	PreRagdollRotation = OwnerCharacter->GetActorRotation();
+	
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	OwnerCharacter->GetMesh()->SetSimulatePhysics(true);
+	OwnerCharacter->GetMesh()->SetPhysicsBlendWeight(1.f);
+	OwnerCharacter->GetMesh()->SetAllBodiesSimulatePhysics(true);
+	OwnerCharacter->GetCharacterMovement()->DisableMovement();
+	FVector KnockbackDirection = HitDirection.GetSafeNormal();
+	KnockbackDirection.Z = 0.8f;
+	OwnerCharacter->GetMesh()->AddImpulse(KnockbackDirection * KnockbackForce, NAME_None,true);
+}
+
+void UJellyStatusComponent::MulticastRecoverFromStun_Implementation(FVector RecoveryLocation)
+{
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+	if (!OwnerCharacter) return;
+
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(RagdollBlendTimerHandle);
+	}
+	
+	OwnerCharacter->GetMesh()->SetPhysicsBlendWeight(0.f);
+	OwnerCharacter->GetMesh()->SetAllBodiesSimulatePhysics(false);
+	OwnerCharacter->GetMesh()->SetSimulatePhysics(false);
+	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	OwnerCharacter->GetCapsuleComponent()->SetWorldLocation(RecoveryLocation,false,nullptr,ETeleportType::TeleportPhysics);
+	OwnerCharacter->GetMesh()->AttachToComponent(OwnerCharacter->GetCapsuleComponent(),FAttachmentTransformRules::KeepWorldTransform);
+	OwnerCharacter->GetMesh()->SetRelativeLocationAndRotation(
+			FVector(0.f, 0.f, -100.f),
+			FRotator(0.f, -90.f, 0.f)
+		);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	OwnerCharacter->GetCharacterMovement()->Velocity = FVector::ZeroVector;
+	OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	
+
+}
+
+
+

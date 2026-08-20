@@ -9,6 +9,8 @@
 #include "JelloCombatComponent.h"
 #include "EquippableToolBase.h"
 #include "EquippableToolDefinition.h"
+#include "JellyPlayerState.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 
 
@@ -19,6 +21,9 @@ AJellyCharacterBase::AJellyCharacterBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+	
+	bReplicates = true;
+	SetReplicateMovement(true);
 	
 	// Setting Camera Boom Up
 	CameraBoom=CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -60,6 +65,8 @@ void AJellyCharacterBase::BeginPlay()
 		}
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Black, TEXT("We're using Jello now."));
+	
+	void ApplyPlayerColor();
 }
 
 // Called every frame
@@ -292,6 +299,45 @@ void AJellyCharacterBase::MeleeAttack()
 	{
 		CombatComponent->MeleeAttack();
 	}
+}
+
+void AJellyCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	ApplyPlayerColor();
+}
+
+void AJellyCharacterBase::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	ApplyPlayerColor();
+}
+
+void AJellyCharacterBase::ApplyPlayerColor()
+{
+	const AJellyPlayerState* JellyPlayerState = GetPlayerState<AJellyPlayerState>();
+
+	if (!JellyPlayerState || !GetMesh()) return;
+	
+	const uint8 ColorIndex = JellyPlayerState->GetPlayerColorIndex();
+	
+	static const FLinearColor PlayerColors[] ={
+		FLinearColor(1.f, .15f,.22f,1.f),
+		FLinearColor(1.f, .48f,.08f,1.f),
+		FLinearColor(.3f, 1.f,.18f,1.f),
+		FLinearColor(.05f, .9f,.85f,1.f),
+		FLinearColor(.12f, .35f,1.f,1.f),
+		FLinearColor(.65f, .12f,1.f,1.f)
+	};
+	constexpr uint8 ColorCount = UE_ARRAY_COUNT(PlayerColors);
+
+	if (ColorIndex >= ColorCount) return;
+
+	if (!PlayerColorMaterial)
+	{
+		PlayerColorMaterial = GetMesh()->CreateDynamicMaterialInstance(PlayerColorMaterialIndex);
+	}
+	PlayerColorMaterial->SetVectorParameterValue(PlayerColorParameterName, PlayerColors[ColorIndex]);
 }
 
 

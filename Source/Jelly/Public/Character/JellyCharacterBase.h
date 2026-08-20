@@ -22,6 +22,7 @@ class AEquippableToolBase;
 class UInventoryComponent;
 class UJellyStatusComponent;
 class UJelloCombatComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class JELLY_API AJellyCharacterBase : public ACharacter
@@ -80,7 +81,7 @@ protected:
 	TObjectPtr<USpringArmComponent> CameraBoom;
 	
 	
-	// Inventory & Equipment Declaration
+	
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 	
@@ -89,7 +90,22 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
 	TObjectPtr<UJelloCombatComponent> CombatComponent;
-
+	
+	
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Jelly|Color")
+	int32 PlayerColorMaterialIndex = 0;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Jelly|Color")
+	FName PlayerColorParameterName = TEXT("PlayerColor");
+	
+	UPROPERTY(Transient)
+	TObjectPtr<UMaterialInstanceDynamic>PlayerColorMaterial;
+	
+	
+	virtual void PossessedBy(AController* NewController) override;
+	
+	virtual void OnRep_PlayerState() override;
 
 private:
 
@@ -123,6 +139,8 @@ public:
 	
 	UFUNCTION()
 	bool GiveItem(UItemDefinition* ItemDefinition);
+	
+	void ApplyPlayerColor();
 	
 	
 	

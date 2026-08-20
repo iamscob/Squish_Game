@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "JellyPlayerState.h"
-
+#include "Character\JellyCharacterBase.h"
 #include "NET/UnrealNetwork.h"
 
 bool AJellyPlayerState::IsChaser() const
@@ -9,22 +9,47 @@ bool AJellyPlayerState::IsChaser() const
 	return bIsChaser;
 }
 
-int32 AJellyPlayerState::GetPenaltyPoints() const
+int32 AJellyPlayerState::GetChaserTime() const
 {
-	return PenaltyPoints;
+	return ChaserTimeSeconds;
 }
 
 void AJellyPlayerState::SetIsChaser(bool bIsNewChaser)
 {
 	if (!HasAuthority()) return;
-	++PenaltyPoints;
+	if (bIsChaser == bIsNewChaser) return;
+	
+	bIsChaser = bIsNewChaser;
 	ForceNetUpdate();
 }
 
-void AJellyPlayerState::ResetPenaltyPoints()
+void AJellyPlayerState::AddChaserTime(float Seconds)
+{
+	if (!HasAuthority() || Seconds <= 0.f) return;
+	ChaserTimeSeconds += Seconds;
+	ForceNetUpdate();
+}
+
+void AJellyPlayerState::ResetChaserTime()
 {
 	if (!HasAuthority()) return;
-	PenaltyPoints = 0;
+	ChaserTimeSeconds = 0.f;
+	ForceNetUpdate();
+}
+
+uint8 AJellyPlayerState::GetPlayerColorIndex() const
+{
+	return PlayerColorIndex;
+}
+
+
+void AJellyPlayerState::SetPlayerColorIndex(uint8 NewColorIndex)
+{
+	if (!HasAuthority() || NewColorIndex > 5) return;
+	PlayerColorIndex = NewColorIndex;
+	
+	OnRep_PlayerColorIndex();
+	
 	ForceNetUpdate();
 }
 
@@ -33,5 +58,18 @@ void AJellyPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(AJellyPlayerState, bIsChaser);
-	DOREPLIFETIME(AJellyPlayerState, PenaltyPoints);
+	DOREPLIFETIME(AJellyPlayerState, ChaserTimeSeconds);
+	DOREPLIFETIME(AJellyPlayerState, PlayerColorIndex);
+	
 }
+
+void AJellyPlayerState::OnRep_PlayerColorIndex()
+{
+	AJellyCharacterBase* JellyCharacter = Cast<AJellyCharacterBase>(GetPawn());
+	if (JellyCharacter)
+	{
+		JellyCharacter->ApplyPlayerColor();
+	}
+}
+
+

@@ -33,6 +33,10 @@ private:
 	
 	float LastMeleeTime =0.f;
 	
+	UFUNCTION(Server,Reliable)
+	void ServerMeleeAttack();
+	
+	void PerformMeleeAttack();
 
 
 public:	
