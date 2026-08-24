@@ -56,6 +56,9 @@ void UJelloCombatComponent::PerformMeleeAttack()
 {
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
 	if (!OwnerCharacter) return;
+
+	if (!OwnerCharacter->HasEquippedTool()) return;
+	
 	UJellyStatusComponent* OwnerStatus = OwnerCharacter->FindComponentByClass<UJellyStatusComponent>();
 	
 	if (OwnerStatus && OwnerStatus->bIsStunned)

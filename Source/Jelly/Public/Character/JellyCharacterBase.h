@@ -32,6 +32,7 @@ class JELLY_API AJellyCharacterBase : public ACharacter
 public: 
 	// Sets default values for this character's properties
 	AJellyCharacterBase();
+
 	
 protected:
 	// Called when the game starts or when spawned
@@ -61,9 +62,10 @@ protected:
 	TObjectPtr<UInputAction> MeleeAction;
 	
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tools")
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedTool,VisibleAnywhere, BlueprintReadOnly, Category = "Tools")
 	TObjectPtr<AEquippableToolBase> EquippedTool;
 	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> FollowCamera;
@@ -111,6 +113,18 @@ private:
 
 	void RemoveToolMappingContext(AEquippableToolBase* Tool);
 	
+	UFUNCTION()
+	void OnRep_EquippedTool();
+	
+	UFUNCTION(Server, Reliable)
+	void ServerThrow();
+	
+	void PerformThrow();
+	
+	void AddToolMappingContext(AEquippableToolBase* Tool);
+	
+	TWeakObjectPtr<AEquippableToolBase> LocallyMappedTool;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -141,6 +155,9 @@ public:
 	bool GiveItem(UItemDefinition* ItemDefinition);
 	
 	void ApplyPlayerColor();
+	
+	UFUNCTION(BlueprintPure, Category = "Jelly|Tool")
+	bool HasEquippedTool() const;
 	
 	
 	

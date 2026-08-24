@@ -3,7 +3,7 @@
 
 #include "JellyCharacterBase.h"
 #include "EnhancedInputSubsystems.h"
-
+#include "Net/UnrealNetwork.h"
 #include "InventoryComponent.h"
 #include "JellyStatusComponent.h"
 #include "JelloCombatComponent.h"
@@ -66,7 +66,7 @@ void AJellyCharacterBase::BeginPlay()
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Black, TEXT("We're using Jello now."));
 	
-	void ApplyPlayerColor();
+	ApplyPlayerColor();
 }
 
 // Called every frame
@@ -87,7 +87,6 @@ void AJellyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered,this,&AJellyCharacterBase::Look);
 		
 		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Throw);
-		EnhancedInputComponent->BindAction(DropAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Drop);
 		EnhancedInputComponent->BindAction(MeleeAction,ETriggerEvent::Started,this, &AJellyCharacterBase::MeleeAttack);
 	}
 	
@@ -126,6 +125,8 @@ void AJellyCharacterBase::Look(const FInputActionValue& Value)
 	// Tool Attachment
 bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 {
+	if (!HasAuthority()) return false;
+
 	if (!ToolDefinition) return false;
 	if (EquippedTool) return false;
 	if (!ToolDefinition->ToolAsset) return false;
@@ -155,22 +156,15 @@ bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 	
 		
 		ToolToEquip->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("RightHandIndex3")));
-		ToolToEquip->ToolMeshComponent->SetRelativeScale3D(FVector(2.f,2.f,2.f));
+		ToolToEquip->SetActorRelativeScale3D(FVector(2.f));
 	
 		ToolToEquip->OwningCharacter = this;
 		EquippedTool = ToolToEquip;
-
-		if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-		{
-			if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-				ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-			{
-				if (ToolToEquip->ToolMappingContext){
-					Subsystem->AddMappingContext((ToolToEquip->ToolMappingContext),1);
-				}
-			}
-		}
-		return true;
+	AddToolMappingContext(ToolToEquip);
+	
+	ForceNetUpdate();
+	ToolToEquip->ForceNetUpdate();
+	return true;
 	}
 
 // PickUps Separation
@@ -234,33 +228,21 @@ void AJellyCharacterBase::Throw()
 {
 	if (!EquippedTool)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("NoTool"));
-		return;
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("NoTool"));
+			return;
+		}
 	}
 	RemoveToolMappingContext(EquippedTool);
-	FRotator CharacterRotator = GetActorRotation();
-	FRotator ThrowRotator(0.f, CharacterRotator.Yaw,0.f);
-	FVector ThrowDirection = ThrowRotator.Vector();
+	
+	if (HasAuthority())
+	{
+		PerformThrow();
+		return;
+	}
+	ServerThrow();
 
-	EquippedTool->Thrower = this;
-	EquippedTool->bThrowerWasChasing = StatusComponent && StatusComponent->IsChasing();
-	
-	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	
-	FVector ThrowStart = EquippedTool->GetActorLocation() + (ThrowDirection * 150.f);
-	EquippedTool->SetActorLocation(ThrowStart);
-	
-	EquippedTool->ToolMeshComponent->SetWorldScale3D(FVector(EquippedTool->WorldScale));
-	
-	EquippedTool->ToolMeshComponent->SetSimulatePhysics(true);
-	EquippedTool->ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	EquippedTool->ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
-	
-	
-	float LaunchForce = 1800.f;
-	EquippedTool->ToolMeshComponent->AddImpulse(ThrowDirection * LaunchForce, NAME_None, true);
-	
-	EquippedTool = nullptr;
 }
 
 
@@ -340,4 +322,86 @@ void AJellyCharacterBase::ApplyPlayerColor()
 	PlayerColorMaterial->SetVectorParameterValue(PlayerColorParameterName, PlayerColors[ColorIndex]);
 }
 
+bool AJellyCharacterBase::HasEquippedTool() const
+{
+	return IsValid(EquippedTool);
+}
 
+void AJellyCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AJellyCharacterBase, EquippedTool);
+}
+
+void AJellyCharacterBase::AddToolMappingContext(AEquippableToolBase* Tool)
+{
+	if (!Tool || !Tool->ToolMappingContext) return;
+	
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if (!PlayerController) return;
+	
+	ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	
+	if (!LocalPlayer) return;
+	
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::
+	GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+
+	if (!Subsystem) return;
+	Subsystem->AddMappingContext(Tool->ToolMappingContext,1);
+}
+
+void AJellyCharacterBase::OnRep_EquippedTool()
+{
+	if (LocallyMappedTool.IsValid())
+	{
+		RemoveToolMappingContext(LocallyMappedTool.Get());
+	}
+	LocallyMappedTool = EquippedTool;
+
+	if (EquippedTool)
+	{
+		EquippedTool->SetActorRelativeScale3D(FVector(2.f));
+		AddToolMappingContext(EquippedTool);
+	}
+}
+
+void AJellyCharacterBase::ServerThrow_Implementation()
+{
+	PerformThrow();
+}
+
+void AJellyCharacterBase::PerformThrow()
+{
+	if (!HasAuthority() || !EquippedTool || !EquippedTool->ToolMeshComponent) return;
+	
+	AEquippableToolBase* ToolToThrow = EquippedTool;
+	
+	FRotator CharacterRotator = GetActorRotation();
+	FRotator ThrowRotator(0.f, CharacterRotator.Yaw,0.f);
+	FVector ThrowDirection = ThrowRotator.Vector();
+	
+	EquippedTool->Thrower = this;
+	EquippedTool->bThrowerWasChasing = StatusComponent && StatusComponent->IsChasing();
+	
+	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
+	FVector ThrowStart = EquippedTool->GetActorLocation() + (ThrowDirection * 150.f);
+	EquippedTool->SetActorLocation(ThrowStart);
+	
+	EquippedTool->ToolMeshComponent->SetWorldScale3D(FVector(EquippedTool->WorldScale));
+	
+	EquippedTool->ToolMeshComponent->SetSimulatePhysics(true);
+	EquippedTool->ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	EquippedTool->ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
+	
+	
+	float LaunchForce = 1800.f;
+	EquippedTool->ToolMeshComponent->AddImpulse(ThrowDirection * LaunchForce, NAME_None, true);
+	
+	EquippedTool = nullptr;
+	
+	ForceNetUpdate();
+	ToolToThrow->ForceNetUpdate();
+}

@@ -9,11 +9,15 @@
 APickupBase::APickupBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	
+	bReplicates = true;
+	SetReplicateMovement(true);
 
 	PickupMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
 	check (PickupMeshComponent != nullptr);
 	SetRootComponent(PickupMeshComponent);
+	PickupMeshComponent->SetIsReplicated(true);
 	
 	PickupMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
 	
@@ -33,16 +37,21 @@ void APickupBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!PickupCollisionComponent)
-	{
-	return;;	
-	}
+	if (!PickupMeshComponent || !PickupCollisionComponent) return;
 	
-	PickupCollisionComponent->OnComponentBeginOverlap.RemoveAll(this);
-	PickupCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &APickupBase::OnBoxBeginOverlap);
 	PickupMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	InitializePickup();
-	
+
+	if (HasAuthority())
+	{
+		PickupCollisionComponent->OnComponentBeginOverlap.RemoveAll(this);
+		PickupCollisionComponent->OnComponentBeginOverlap .AddDynamic(this,&APickupBase::OnBoxBeginOverlap);
+	}
+	else
+	{
+		PickupCollisionComponent->SetGenerateOverlapEvents(false);
+		PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 
 }
 
@@ -119,19 +128,18 @@ void APickupBase::InitializePickup()
 	
 void APickupBase::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Attempting a pickup collision"));
- 
-	// Checking if Character's overlapping
+	if (!HasAuthority()) return;
+	
 	AJellyCharacterBase* Character = Cast<AJellyCharacterBase>(OtherActor);
-	if (Character != nullptr)
-	{
-		bool bPickedUp = Character->GiveItem(ReferenceItem);
+	if (!Character || !ReferenceItem) return;
+	
+		const bool bPickedUp = Character->GiveItem(ReferenceItem);
 		if (bPickedUp)
 		{
-		K2_DestroyActor();
+		Destroy();
 		}
 		
-	}
+	
 	
 }
 

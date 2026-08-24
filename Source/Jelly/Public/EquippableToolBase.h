@@ -51,6 +51,11 @@ public:
 		FVector NormalImpulse, const FHitResult& HitResult
 		);
 	
+	
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastPrepareForThrow(FVector ThrowStart);
+	
+	
 private:
 	UPROPERTY()
 		bool bHasProcessedHit = false;

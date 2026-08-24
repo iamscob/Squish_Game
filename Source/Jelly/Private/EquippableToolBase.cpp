@@ -11,6 +11,9 @@ AEquippableToolBase::AEquippableToolBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	bReplicates = true;
+	SetReplicateMovement(true);
 	
 	ToolMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ToolMesh"));
 	check(ToolMeshComponent!=nullptr);
@@ -21,6 +24,7 @@ AEquippableToolBase::AEquippableToolBase()
 	
 	ToolMeshComponent->SetNotifyRigidBodyCollision(true);
 	ToolMeshComponent->OnComponentHit.AddDynamic(this, &AEquippableToolBase::OnToolHit);
+	ToolMeshComponent->SetIsReplicated(true);
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +46,8 @@ void AEquippableToolBase::OnToolHit(
 	FVector NormalImpulse, const FHitResult& HitResult
 	)
 {
+	if (!HasAuthority()) return;
+	
 	if (bHasProcessedHit || !Thrower || !OtherActor) return;
 	
 	AJellyCharacterBase* HitCharacter = Cast<AJellyCharacterBase>(OtherActor);
@@ -62,6 +68,18 @@ void AEquippableToolBase::OnToolHit(
 	bHasProcessedHit = true;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,TEXT("Throw Hit"));
 	Destroy();
+}
+
+void AEquippableToolBase::MulticastPrepareForThrow_Implementation(FVector ThrowStart)
+{
+	if (!ToolMeshComponent) return;
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	SetActorLocation(ThrowStart,false, nullptr,ETeleportType::TeleportPhysics);
+	ToolMeshComponent->SetWorldScale3D(FVector(WorldScale));
+	ToolMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
+	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ToolMeshComponent->SetSimulatePhysics(true);
+	ToolMeshComponent->WakeAllRigidBodies();
 }
 	
 
