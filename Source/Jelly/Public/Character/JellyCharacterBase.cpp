@@ -378,30 +378,48 @@ void AJellyCharacterBase::PerformThrow()
 	
 	AEquippableToolBase* ToolToThrow = EquippedTool;
 	
-	FRotator CharacterRotator = GetActorRotation();
-	FRotator ThrowRotator(0.f, CharacterRotator.Yaw,0.f);
-	FVector ThrowDirection = ThrowRotator.Vector();
+	const FRotator CharacterRotator = GetActorRotation();
+	const FRotator ThrowRotator(0.f, CharacterRotator.Yaw,0.f);
+	const FVector ThrowDirection = ThrowRotator.Vector();
 	
-	EquippedTool->Thrower = this;
-	EquippedTool->bThrowerWasChasing = StatusComponent && StatusComponent->IsChasing();
+	ToolToThrow->Thrower = this;
+	ToolToThrow->bThrowerWasChasing = StatusComponent && StatusComponent->IsChasing();
 	
-	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	ToolToThrow->OwningCharacter = nullptr;
+	ToolToThrow->SetOwner(nullptr);
 	
-	FVector ThrowStart = EquippedTool->GetActorLocation() + (ThrowDirection * 150.f);
-	EquippedTool->SetActorLocation(ThrowStart);
+	const FVector ThrowStart = EquippedTool->GetActorLocation() + (ThrowDirection * 150.f);
+	ToolToThrow->MulticastPrepareForThrow(ThrowStart);
 	
-	EquippedTool->ToolMeshComponent->SetWorldScale3D(FVector(EquippedTool->WorldScale));
+	ToolToThrow->StartPickupCooldown();
 	
-	EquippedTool->ToolMeshComponent->SetSimulatePhysics(true);
-	EquippedTool->ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	EquippedTool->ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
-	
-	
-	float LaunchForce = 1800.f;
-	EquippedTool->ToolMeshComponent->AddImpulse(ThrowDirection * LaunchForce, NAME_None, true);
+	constexpr float LaunchForce = 1800.f;
+	ToolToThrow->ToolMeshComponent->AddImpulse(ThrowDirection * LaunchForce, NAME_None, true);
 	
 	EquippedTool = nullptr;
 	
 	ForceNetUpdate();
 	ToolToThrow->ForceNetUpdate();
+}
+
+bool AJellyCharacterBase::AttachExistingTool(AEquippableToolBase* ToolToEquip)
+{
+	if (!HasAuthority() || !ToolToEquip || EquippedTool) return false;
+	
+	ToolToEquip->SetOwner(this);
+	ToolToEquip->SetInstigator(this);
+	ToolToEquip->OwningCharacter = this;
+	ToolToEquip->Thrower = nullptr;
+	ToolToEquip->ResetProcessedHit();
+	
+	ToolToEquip->MulticastPrepareForHeld(this);
+	
+	EquippedTool = ToolToEquip;
+	
+	AddToolMappingContext(ToolToEquip);
+	
+	ForceNetUpdate();
+	ToolToEquip->ForceNetUpdate();
+	
+	return true;
 }

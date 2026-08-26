@@ -5,6 +5,7 @@
 #include "Character/JellyCharacterBase.h"
 #include "InputMappingContext.h"
 #include "JellyStatusComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 AEquippableToolBase::AEquippableToolBase()
@@ -25,13 +26,31 @@ AEquippableToolBase::AEquippableToolBase()
 	ToolMeshComponent->SetNotifyRigidBodyCollision(true);
 	ToolMeshComponent->OnComponentHit.AddDynamic(this, &AEquippableToolBase::OnToolHit);
 	ToolMeshComponent->SetIsReplicated(true);
+	
+	PickupCollisionComponent = CreateDefaultSubobject<USphereComponent>("PickupCollision");
+	PickupCollisionComponent->SetupAttachment(ToolMeshComponent);
+	PickupCollisionComponent->SetSphereRadius(80.f);
+	PickupCollisionComponent->SetGenerateOverlapEvents(false);
+	PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PickupCollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	PickupCollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
 // Called when the game starts or when spawned
 void AEquippableToolBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (!PickupCollisionComponent) return;
+	if (HasAuthority())
+	{
+		PickupCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AEquippableToolBase::OnPickupBeginOverlap);
+	}
+	else
+	{
+		PickupCollisionComponent->SetGenerateOverlapEvents(false);
+		PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 // Called every frame
@@ -67,7 +86,7 @@ void AEquippableToolBase::OnToolHit(
 	if (!bHitApplied) return;
 	bHasProcessedHit = true;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,TEXT("Throw Hit"));
-	Destroy();
+	StartPickupCooldown();
 }
 
 void AEquippableToolBase::MulticastPrepareForThrow_Implementation(FVector ThrowStart)
@@ -81,6 +100,68 @@ void AEquippableToolBase::MulticastPrepareForThrow_Implementation(FVector ThrowS
 	ToolMeshComponent->SetSimulatePhysics(true);
 	ToolMeshComponent->WakeAllRigidBodies();
 }
+
+void AEquippableToolBase::StartPickupCooldown()
+{
+	if (!HasAuthority() || !PickupCollisionComponent || !GetWorld()) return;
 	
+	bCanBePickedUp = false;
+	PickupCollisionComponent->SetGenerateOverlapEvents(false);
+	PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	GetWorldTimerManager().ClearTimer(PickupEnableTimerHandle);
+	
+	GetWorldTimerManager().SetTimer(PickupEnableTimerHandle, this,
+		&AEquippableToolBase::EnablePickup,1.f,false);
+}
+
+void AEquippableToolBase::EnablePickup()
+{
+	if (!HasAuthority() || !PickupCollisionComponent || OwningCharacter) return;
+	bCanBePickedUp = true;
+	PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	PickupCollisionComponent->SetGenerateOverlapEvents(true);
+}
+
+void AEquippableToolBase::ResetProcessedHit()
+{
+	bHasProcessedHit = false;
+}
+
+void AEquippableToolBase::OnPickupBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!HasAuthority() || !bCanBePickedUp || !OtherActor) return;
+	
+	AJellyCharacterBase* Character = Cast<AJellyCharacterBase>(OtherActor);
+	if (!Character || Character->HasEquippedTool()) return;
+	if (Character->AttachExistingTool(this))
+	{
+		bCanBePickedUp = false;
+		PickupCollisionComponent->SetGenerateOverlapEvents(false);
+		PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void AEquippableToolBase::MulticastPrepareForHeld_Implementation(AJellyCharacterBase* NewOwningCharacter)
+{
+	if (!NewOwningCharacter || !ToolMeshComponent ||!PickupCollisionComponent) return;
+	
+	PickupCollisionComponent->SetGenerateOverlapEvents(false);
+	PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	ToolMeshComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	
+	ToolMeshComponent->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	
+	ToolMeshComponent->SetSimulatePhysics(false);
+	ToolMeshComponent->SetGenerateOverlapEvents(false);
+	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
+	AttachToComponent(NewOwningCharacter->GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+		FName(TEXT("RightHandIndex3")));
+	SetActorRelativeScale3D(FVector(2.f));
+}
 
 

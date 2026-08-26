@@ -152,6 +152,9 @@ public:
 	bool AttachTool(UEquippableToolDefinition* ToolDefinition);
 	
 	UFUNCTION()
+	bool AttachExistingTool(AEquippableToolBase* ToolToEquip);
+	
+	UFUNCTION()
 	bool GiveItem(UItemDefinition* ItemDefinition);
 	
 	void ApplyPlayerColor();

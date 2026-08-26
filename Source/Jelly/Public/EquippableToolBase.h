@@ -12,6 +12,7 @@
 class AJellyCharacterBase;
 class UInputAction;
 class UInputMappingContext;
+class USphereComponent;
 
 UCLASS(BlueprintType, Blueprintable)
 class JELLY_API AEquippableToolBase : public AActor
@@ -40,6 +41,8 @@ public:
 	UPROPERTY()
 	bool bThrowerWasChasing = false;
 	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Tool|Pickup")
+	TObjectPtr<USphereComponent> PickupCollisionComponent;	
 	
 	
 	UPROPERTY()
@@ -55,10 +58,23 @@ public:
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastPrepareForThrow(FVector ThrowStart);
 	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPrepareForHeld(AJellyCharacterBase* NewOwningCharacter);
+	
 	
 private:
 	UPROPERTY()
 		bool bHasProcessedHit = false;
+	
+	FTimerHandle PickupEnableTimerHandle;
+	
+	bool bCanBePickedUp = false;
+	
+	UFUNCTION()
+	void OnPickupBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	void EnablePickup();
 
 	
 protected:
@@ -70,5 +86,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	void StartPickupCooldown();
+	
+	void ResetProcessedHit();
 
 };
