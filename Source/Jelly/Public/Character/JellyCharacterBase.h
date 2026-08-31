@@ -56,9 +56,6 @@ protected:
 	TObjectPtr<UInputAction> ThrowAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Input")
-	TObjectPtr<UInputAction> DropAction;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Input")
 	TObjectPtr<UInputAction> MeleeAction;
 	
 	
@@ -123,6 +120,10 @@ private:
 	
 	void AddToolMappingContext(AEquippableToolBase* Tool);
 	
+	void HandleJumpStarted();
+	
+	void HandleJumpEnded();
+	
 	TWeakObjectPtr<AEquippableToolBase> LocallyMappedTool;
 	
 public:	
@@ -143,9 +144,6 @@ public:
 	void Throw();
 	
 	UFUNCTION()
-	void Drop();
-	
-	UFUNCTION()
 	void MeleeAttack();
 	
 	UFUNCTION()
@@ -162,10 +160,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Jelly|Tool")
 	bool HasEquippedTool() const;
 	
+	UFUNCTION(BlueprintPure, Category="Jelly|Match")
+	bool CanUseInput() const;
 	
 	
-
-
-	
-
 };

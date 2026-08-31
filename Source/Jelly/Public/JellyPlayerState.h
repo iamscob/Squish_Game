@@ -25,7 +25,7 @@ public:
 	bool IsChaser() const;
 	
 	UFUNCTION(BlueprintPure, Category = "Jelly|Round")
-	int32 GetChaserTime() const;
+	float GetChaserTime() const;
 	
 	void SetIsChaser(bool bIsNewChaser);
 	void AddChaserTime(float Seconds);

@@ -13,7 +13,7 @@ UJelloCombatComponent::UJelloCombatComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 
 	// ...
 }
@@ -54,19 +54,27 @@ void UJelloCombatComponent::MeleeAttack()
 
 void UJelloCombatComponent::PerformMeleeAttack()
 {
+	
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
-	if (!OwnerCharacter) return;
-
-	if (!OwnerCharacter->HasEquippedTool()) return;
+	if (!OwnerCharacter|| !GetWorld() || !OwnerCharacter->CanUseInput()) return;
 	
 	UJellyStatusComponent* OwnerStatus = OwnerCharacter->FindComponentByClass<UJellyStatusComponent>();
 	
-	if (OwnerStatus && OwnerStatus->bIsStunned)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,TEXT("Stunned"));
-		return;
-	}
-	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (!OwnerStatus) return;
+	
+	const bool bIsChaser = OwnerStatus-> IsChasing();
+	const bool bHasTool = OwnerCharacter->HasEquippedTool();
+	
+	if (!bIsChaser && !bHasTool) return;
+	
+	const EJellyHitType HitType = bHasTool ? EJellyHitType::ToolMelee : EJellyHitType::HandMelee;
+	
+	const float AttackRange = bHasTool ? 300.f : 150.f;
+	
+	const float AttackRadius = bHasTool ? 70.f : 50.f;
+	
+	const float CurrentTime = GetWorld()->GetTimeSeconds();
+	
 	if (CurrentTime - LastMeleeTime < MeleeCooldownTime)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,TEXT("Cooldown"));
@@ -75,8 +83,8 @@ void UJelloCombatComponent::PerformMeleeAttack()
 	}
 	LastMeleeTime = CurrentTime;
 	
-	FVector Start = OwnerCharacter->GetActorLocation() + FVector(0.f,0.f,80.f);
-	FVector End = Start + (OwnerCharacter->GetActorForwardVector() * 300.f);
+	const FVector Start = OwnerCharacter->GetActorLocation() + FVector(0.f,0.f,80.f);
+	const FVector End = Start + (OwnerCharacter->GetActorForwardVector() * 300.f);
 	float Radius = 70.f;
 	
 	TArray<FHitResult> HitResults;
@@ -93,29 +101,32 @@ void UJelloCombatComponent::PerformMeleeAttack()
 		QueryParams
 		);
 	
-	FColor DebugColor = bHit ? FColor::Green : FColor::Red;
+	const FColor DebugColor = bHit ? FColor::Green : FColor::Red;
 	DrawDebugLine(GetWorld(), Start, End, DebugColor, false, 0.5f, 0, 3.f);
-	if (bHit)
-	{
-		for (const FHitResult& Hit : HitResults)
+	if (!bHit) return;
+	
+	for (const FHitResult& Hit : HitResults)
 		{
-			AJellyCharacterBase* HitCharacter = Cast<AJellyCharacterBase>(Hit.GetActor());
-			if (HitCharacter && HitCharacter != OwnerCharacter)
-			{
+		AJellyCharacterBase* HitCharacter = Cast<AJellyCharacterBase>(Hit.GetActor());
+			if (!HitCharacter || HitCharacter == OwnerCharacter) continue;
+			
 				UJellyStatusComponent* HitStatus = HitCharacter->FindComponentByClass<UJellyStatusComponent>();
-				if (HitStatus)
-				{
-					const bool bHitApplied = HitStatus->ApplyHit(OwnerCharacter, OwnerCharacter->GetActorForwardVector(), false);
+				if (!HitStatus) continue;
+				
+					const bool bHitApplied = HitStatus->ApplyHit(OwnerCharacter, OwnerCharacter->GetActorForwardVector(), HitType);
 					if (bHitApplied)
+					{if (GEngine)
 					{
 						GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,TEXT("Melee Hit"));
+					}
 						break;
 					}
-				}
-			}
+	
+				
+			
 			
 		}
-	}
+	
 }
 
 void UJelloCombatComponent::ServerMeleeAttack_Implementation()

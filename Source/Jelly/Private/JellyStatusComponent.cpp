@@ -7,6 +7,7 @@
 #include "JellyPlayerState.h"
 #include "JellyGameModeBase.h"
 #include "Net\UnrealNetwork.h"
+#include "JellyGameStateBase.h"
 
 // Sets default values for this component's properties
 UJellyStatusComponent::UJellyStatusComponent()
@@ -54,73 +55,112 @@ void UJellyStatusComponent::SetIsChasing(bool bNewIsChasing)
 	}
 }
 
-bool UJellyStatusComponent::ApplyHit(AJellyCharacterBase* Attacker, const FVector& HitDirection, bool bIsThrownHit)
+bool UJellyStatusComponent::ApplyHit(AJellyCharacterBase* Attacker, const FVector& HitDirection, EJellyHitType HitType)
 	{
-		if (!GetOwner() || !GetOwner()->HasAuthority())
-		{
-			return false;
-		}
-	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
-	if (!OwnerCharacter || !Attacker || bIsStunned) return false;
+	AActor* OwnerActor = GetOwner();
+	UWorld* World = GetWorld();
+		if (!OwnerActor || !OwnerActor->HasAuthority() || !World) return false;
 	
-UJellyStatusComponent* AttackerStatus = Attacker->FindComponentByClass<UJellyStatusComponent>();
+	const AJellyGameStateBase* JellyGameState = World->GetGameState<AJellyGameStateBase>();
+	
+	if (!JellyGameState || JellyGameState->GetMatchPhase() != EJellyMatchPhase::Playing) return false;
+	
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+	
+	if (!OwnerCharacter || !Attacker || Attacker == OwnerCharacter||bIsStunned) return false;
+	
+	UJellyStatusComponent* AttackerStatus = Attacker->FindComponentByClass<UJellyStatusComponent>();
+	
 	if (!AttackerStatus) return false;
 	
-	UJellyStatusComponent* OwnerStatus = this;
-	
 	const bool bAttackerIsChaser = AttackerStatus->IsChasing();
-	const bool bOwnerIsChaser = OwnerStatus->IsChasing();
 	
-		float StunDuration = 2.f;
+	const bool bOwnerIsChaser = IsChasing();
 
-		// If Chasing Player Attacks -> Running Player
-		if (bAttackerIsChaser && !bOwnerIsChaser)
+	if (HitType == EJellyHitType::HandMelee && !bAttackerIsChaser) return false;
+		
+	if (bAttackerIsChaser && !bOwnerIsChaser)
+	{
+		AJellyGameModeBase* JellyGameMode = World->GetAuthGameMode<AJellyGameModeBase>();
+
+		if (!JellyGameMode || !JellyGameMode->TryTransferChaser(Attacker, OwnerCharacter)) return false;
+	}
+	
+	float StunDuration = 1.f;
+	float HorizontalSpeed = 2000.f;
+	float VerticalSpeed = 400.f;
+
+	switch (HitType)
+	{
+	case EJellyHitType::HandMelee:
 		{
-		AJellyGameModeBase* JellyGameMode = GetWorld()->GetAuthGameMode<AJellyGameModeBase>();
-			
-			if (!JellyGameMode)return false;
-			
-			const bool bRoleTransfered = JellyGameMode->TryTransferChaser(Attacker,OwnerCharacter);
-			
-			if (!bRoleTransfered) return false;
-			
-		StunDuration = 2.5f;
-		} // Running -> Chasing
-		else if (!bAttackerIsChaser && bOwnerIsChaser)
-		{
-			StunDuration = 1.8f;
-		} // Running -> Running
-		else if (!bAttackerIsChaser && !bOwnerIsChaser)
-		{
-			StunDuration = 1.3f;
-		} // Default
-		else
-		{
-			StunDuration = 2.f;
+			StunDuration = .8f;
+			HorizontalSpeed = 1800.f;
+			VerticalSpeed = 350.f;
+			break;
 		}
+	case EJellyHitType::ToolMelee:
+		{
+			StunDuration = 1.6f;
+			HorizontalSpeed = 2500.f;
+			VerticalSpeed = 500.f;
+			break;
+		}
+	case EJellyHitType::ThrownTool:
+		{
+			StunDuration = 1.6f;
+			HorizontalSpeed = 3500.f;
+			VerticalSpeed = 750.f;
+			break;
+		}
+		default: return false;
+	}
 		bIsStunned = true;
 	
-		const float KnockbackForce = bIsThrownHit ? 5000.f : 2800.f;
+		const FVector HorizontalDirection = FVector(HitDirection.X, HitDirection.Y, 0.f).GetSafeNormal();
+		const FVector LaunchVelocity = HorizontalDirection * HorizontalSpeed + FVector::UpVector * VerticalSpeed;
 	
-		MulticastStartRagdoll(HitDirection, KnockbackForce);
+		MulticastStartRagdoll(LaunchVelocity);
 	
-		OwnerCharacter->GetWorldTimerManager().SetTimer(
-			StunTimerHandle,this,&UJellyStatusComponent::RecoverFromStun,
-			StunDuration, false
-			); 
+	OwnerCharacter->GetWorldTimerManager().ClearTimer(StunTimerHandle);
+	OwnerCharacter->GetWorldTimerManager().SetTimer(StunTimerHandle, this,
+		&UJellyStatusComponent::RecoverFromStun, StunDuration, false);
+	
 	return true;
 	}
 
 void UJellyStatusComponent::RecoverFromStun()
 {
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
-	if (!OwnerCharacter || !OwnerCharacter->HasAuthority()) return;
+	if (!OwnerCharacter || !OwnerCharacter->HasAuthority() || !GetWorld() || !OwnerCharacter->GetMesh()||
+		!OwnerCharacter->GetCapsuleComponent()) return;
 	
-	const FVector RecoveryLocation = OwnerCharacter->GetMesh()->GetComponentLocation();
+	USkeletalMeshComponent* CharacterMesh = OwnerCharacter->GetMesh();
+	UCapsuleComponent* Capsule = OwnerCharacter->GetCapsuleComponent();
+	
+	const FVector RagdollCenter = CharacterMesh->Bounds.Origin;
+	const FVector TraceStart = RagdollCenter + FVector(0.f,0.f, 100.f);
+	const FVector TraceEnd = RagdollCenter - FVector(0.f,0.f, 500.f);
+	
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(OwnerCharacter);
+	
+	FHitResult GroundHit;
+	
+	const bool bFoundGround = GetWorld()->LineTraceSingleByChannel(GroundHit,
+		TraceStart, TraceEnd,ECC_Visibility,QueryParams);
+	
+	FVector SafeCapsuleLocation = OwnerCharacter->GetActorLocation();
+	if (bFoundGround)
+	{
+	const float CapsuleHalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+		
+		SafeCapsuleLocation = GroundHit.ImpactPoint + FVector::UpVector * (CapsuleHalfHeight +5.f);
+	}
 	
 	bIsStunned = false;
 	
-	MulticastRecoverFromStun(RecoveryLocation);
+	MulticastRecoverFromStun(SafeCapsuleLocation);
 	
 }
 
@@ -140,7 +180,7 @@ void UJellyStatusComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	DOREPLIFETIME(UJellyStatusComponent, bIsStunned);
 }
 
-void UJellyStatusComponent::MulticastStartRagdoll_Implementation(FVector HitDirection, float KnockbackForce)
+void UJellyStatusComponent::MulticastStartRagdoll_Implementation(FVector LaunchVelocity)
 {
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
 	if (!OwnerCharacter || !GetWorld()) return;
@@ -155,9 +195,7 @@ void UJellyStatusComponent::MulticastStartRagdoll_Implementation(FVector HitDire
 	OwnerCharacter->GetMesh()->SetPhysicsBlendWeight(1.f);
 	OwnerCharacter->GetMesh()->SetAllBodiesSimulatePhysics(true);
 	OwnerCharacter->GetCharacterMovement()->DisableMovement();
-	FVector KnockbackDirection = HitDirection.GetSafeNormal();
-	KnockbackDirection.Z = 0.8f;
-	OwnerCharacter->GetMesh()->AddImpulse(KnockbackDirection * KnockbackForce, NAME_None,true);
+	OwnerCharacter->GetMesh()->AddImpulse(LaunchVelocity, NAME_None,true);
 }
 
 void UJellyStatusComponent::MulticastRecoverFromStun_Implementation(FVector RecoveryLocation)
@@ -184,9 +222,21 @@ void UJellyStatusComponent::MulticastRecoverFromStun_Implementation(FVector Reco
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	OwnerCharacter->GetCharacterMovement()->Velocity = FVector::ZeroVector;
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	
-
 }
 
+void UJellyStatusComponent::ResetForNewMatch(const FVector& SpawnLocation)
+{
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+	
+	if (!OwnerCharacter || !OwnerCharacter->HasAuthority()) return;;
+	
+	OwnerCharacter->GetWorldTimerManager().ClearTimer(StunTimerHandle);
+	
+	bIsStunned = false;
+	
+	MulticastRecoverFromStun_Implementation(SpawnLocation);
+	
+	OwnerCharacter->ForceNetUpdate();
+}
 
 

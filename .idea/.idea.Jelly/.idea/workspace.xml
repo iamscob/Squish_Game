@@ -17,7 +17,28 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="36b90232-fbd7-4d8b-bff5-0946c74c700e" name="Changes" comment="core changes (Tools):&#10;- now can be picked up" />
+    <list default="true" id="36b90232-fbd7-4d8b-bff5-0946c74c700e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyGameModeBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyGameModeBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/A/0Z/RU7XDUS4L3GSOWEY4B6QSF.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/C/DU/4YV6G9FF41ZTIKKEE1ZQJV.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jelly.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Jelly.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Jelly.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Jelly.Build.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JelloCombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JelloCombatComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameStateBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameStateBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyPlayerState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyPlayerState.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyGameModeBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyGameModeBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyGameStateBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyGameStateBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyPlayerState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyPlayerState.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,12 +68,15 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/UMG/Public/Components/CanvasPanel.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JelloCombatComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyGameStateBase.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyHudWidget.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JelloCombatComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyGameModeBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyGameStateBase.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyHudWidget.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="McpProjectServerCommands">
     <commands />
@@ -61,61 +85,61 @@
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0753764416366565" />
-      <entry key="MS500" value="2.0220560362395847" />
-      <entry key="S2" value="7.0105112050254395" />
-      <entry key="S5" value="11.195725493151242" />
-      <entry key="S10" value="13.32598626533946" />
-      <entry key="S30" value="15.377177145693537" />
-      <entry key="S60" value="17.75140667397044" />
-      <entry key="M2" value="21.546482149571" />
-      <entry key="M5" value="26.85930074889101" />
-      <entry key="M10" value="36.348526583812685" />
-      <entry key="M15" value="52.08756178971208" />
-      <entry key="M30" value="122.92655748313858" />
-      <entry key="H1" value="300.1022896781647" />
-      <entry key="H2" value="711.9733840473299" />
-      <entry key="H4" value="1522.009019233877" />
-      <entry key="D1" value="4785.969073390413" />
-      <entry key="W1" value="6459.215976928737" />
+      <entry key="MS100" value="6.073036699788069E-22" />
+      <entry key="MS500" value="5.710592638131104E-5" />
+      <entry key="S2" value="0.08693821002984328" />
+      <entry key="S5" value="0.38560179457705795" />
+      <entry key="S10" value="0.7097210647290142" />
+      <entry key="S30" value="1.5542412475491747" />
+      <entry key="S60" value="4.296536838181838" />
+      <entry key="M2" value="13.605193800166568" />
+      <entry key="M5" value="38.80654715044206" />
+      <entry key="M10" value="74.99602901451732" />
+      <entry key="M15" value="109.32280058002522" />
+      <entry key="M30" value="213.35910110510687" />
+      <entry key="H1" value="412.4995852673276" />
+      <entry key="H2" value="745.3486482866688" />
+      <entry key="H4" value="1367.0515885152417" />
+      <entry key="D1" value="5277.393490339497" />
+      <entry key="W1" value="7970.263172980571" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="1.3770267610340356E-215" />
-      <entry key="S5" value="1.9230642208491342E-86" />
-      <entry key="S10" value="2.3549828421304675E-43" />
-      <entry key="S30" value="1.5337060596696623E-14" />
-      <entry key="S60" value="3.523727630644023E-7" />
-      <entry key="M2" value="0.0023656960290568724" />
-      <entry key="M5" value="0.8365450306185905" />
-      <entry key="M10" value="8.816786288860115" />
-      <entry key="M15" value="22.243760205811686" />
-      <entry key="M30" value="69.68471316699775" />
-      <entry key="H1" value="166.06007940979316" />
-      <entry key="H2" value="357.56462119546006" />
-      <entry key="H4" value="699.8659884825028" />
-      <entry key="D1" value="1931.49916182756" />
-      <entry key="W1" value="2515.7799399612536" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0000156044786503" />
+      <entry key="S5" value="1.012412733573397" />
+      <entry key="S10" value="1.137593838154372" />
+      <entry key="S30" value="2.060310659645558" />
+      <entry key="S60" value="3.612720229236455" />
+      <entry key="M2" value="7.776257520272529" />
+      <entry key="M5" value="20.73821054870148" />
+      <entry key="M10" value="41.44783150207709" />
+      <entry key="M15" value="61.2992183785164" />
+      <entry key="M30" value="120.65268577382605" />
+      <entry key="H1" value="226.52135986385335" />
+      <entry key="H2" value="394.06831487091426" />
+      <entry key="H4" value="695.7724808450962" />
+      <entry key="D1" value="2326.3619348327743" />
+      <entry key="W1" value="3344.918912679309" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.0464801643011907" />
-      <entry key="MS500" value="2.0119851709595675" />
-      <entry key="S2" value="6.994640204165286" />
-      <entry key="S5" value="11.182405805757389" />
-      <entry key="S10" value="13.317292041431278" />
-      <entry key="S30" value="15.373665541320742" />
-      <entry key="S60" value="17.749466703729475" />
-      <entry key="M2" value="21.547733945636242" />
-      <entry key="M5" value="27.691988065526267" />
-      <entry key="M10" value="45.14729555232441" />
-      <entry key="M15" value="74.30059947707987" />
-      <entry key="M30" value="192.55957677390379" />
-      <entry key="H1" value="466.0937040596343" />
-      <entry key="H2" value="1069.4560109037052" />
-      <entry key="H4" value="2221.7883629742396" />
-      <entry key="D1" value="6717.422923486159" />
-      <entry key="W1" value="8974.987168775218" />
+      <entry key="MS100" value="1.2600636965768105E-7" />
+      <entry key="MS500" value="0.0417145245838504" />
+      <entry key="S2" value="0.5188081900399261" />
+      <entry key="S5" value="1.0852428966003995" />
+      <entry key="S10" value="1.6523211845665156" />
+      <entry key="S30" value="3.511354471765271" />
+      <entry key="S60" value="7.820618986057964" />
+      <entry key="M2" value="21.280183806691557" />
+      <entry key="M5" value="59.43689798986968" />
+      <entry key="M10" value="116.33681660596004" />
+      <entry key="M15" value="170.51517955906493" />
+      <entry key="M30" value="333.902553750429" />
+      <entry key="H1" value="638.91504269767" />
+      <entry key="H2" value="1139.3232770919994" />
+      <entry key="H4" value="2062.7402136747396" />
+      <entry key="D1" value="7603.703849486954" />
+      <entry key="W1" value="11315.171039799357" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -263,6 +287,11 @@
       <workItem from="1787578467714" duration="11244000" />
       <workItem from="1787592494337" duration="1000" />
       <workItem from="1787736464352" duration="1526000" />
+      <workItem from="1787738546757" duration="12531000" />
+      <workItem from="1787760093531" duration="137000" />
+      <workItem from="1788010211117" duration="12559000" />
+      <workItem from="1788176621620" duration="5427000" />
+      <workItem from="1788184721960" duration="1617000" />
     </task>
     <task id="LOCAL-00001" summary="CORE CHANGES: tool throwing + splitting pickups into Consumables/Tools&#10;&#10;PICKUPS UPDATES:&#10;- Throwing in the character's facing direction with ThrowingTool size restoration&#10;- Consumables: added animation : rotation and levitation (no physics)&#10;- Tools: physics (falling, bouncing)&#10;- Outline Material for pickups added&#10;&#10;OTHER FIXES:&#10;- Fixed some bugs that caused editor crashes &#10;- Removed Pickups respawn logic">
       <option name="closed" value="true" />
@@ -328,7 +357,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787738224375</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Core changes:&#10;- add server-authoritative overlap for thrown tools&#10;- reuse the same replicated actor&#10;&#10;Debug:&#10;- prevent immediate pickup after throwing&#10;- synchronize physics and attachment&#10;- reset hit state after pickup">
+      <option name="closed" value="true" />
+      <created>1787738785020</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1787738785020</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -347,7 +384,9 @@
     <MESSAGE value="Net fixes:&#10;-sinchronize tool pickup and throwing&#10;Bug fixes: &#10;- you cannot hit character if you not holding a tool." />
     <MESSAGE value="core changes (Tools): &#10;- now can be picked up" />
     <MESSAGE value="core changes (Tools):&#10;- now can be picked up" />
-    <option name="LAST_COMMIT_MESSAGE" value="core changes (Tools):&#10;- now can be picked up" />
+    <MESSAGE value="Net fixes:&#10;-sinchronize tool pickup and throwing&#10;Bug fixes:&#10;- you cannot hit character if you not holding a tool." />
+    <MESSAGE value="Core changes:&#10;- add server-authoritative overlap for thrown tools&#10;- reuse the same replicated actor&#10;&#10;Debug:&#10;- prevent immediate pickup after throwing&#10;- synchronize physics and attachment&#10;- reset hit state after pickup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Core changes:&#10;- add server-authoritative overlap for thrown tools&#10;- reuse the same replicated actor&#10;&#10;Debug:&#10;- prevent immediate pickup after throwing&#10;- synchronize physics and attachment&#10;- reset hit state after pickup" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -90,5 +90,7 @@ public:
 	void StartPickupCooldown();
 	
 	void ResetProcessedHit();
+	
+	void ApplyHeldState(AJellyCharacterBase* NewOwningCharacter);
 
 };

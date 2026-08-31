@@ -8,13 +8,22 @@
 
 class AJellyCharacterBase;
 
+UENUM(BlueprintType)
+enum class EJellyHitType : uint8
+{
+	HandMelee,
+	ToolMelee,
+	ThrownTool
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class JELLY_API UJellyStatusComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+	
+	
 	UJellyStatusComponent();
 		
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category= "Status")
@@ -41,10 +50,13 @@ private:
 
 	
 	UFUNCTION(NetMulticast,Reliable)
-	void MulticastStartRagdoll(FVector HitDirection, float KnockbackForce);
+	void MulticastStartRagdoll(FVector LaunchVelocity);
 	
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastRecoverFromStun(FVector RecoveryLocation);
+
+	
+	
 
 	
 public:	
@@ -59,8 +71,10 @@ public:
 	
 	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
-	bool ApplyHit(AJellyCharacterBase* Attacker, const FVector& HitDirection, bool bIsThrownHit = false);
+	bool ApplyHit(AJellyCharacterBase* Attacker, const FVector& HitDirection,EJellyHitType HitType);
 	
 	UFUNCTION(BlueprintCallable, Category = "Status")
 	void RecoverFromStun();
+	
+	void ResetForNewMatch(const FVector& SpawnLocation);
 };

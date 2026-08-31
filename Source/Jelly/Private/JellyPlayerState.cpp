@@ -9,7 +9,7 @@ bool AJellyPlayerState::IsChaser() const
 	return bIsChaser;
 }
 
-int32 AJellyPlayerState::GetChaserTime() const
+float AJellyPlayerState::GetChaserTime() const
 {
 	return ChaserTimeSeconds;
 }
@@ -61,6 +61,7 @@ void AJellyPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	DOREPLIFETIME(AJellyPlayerState, ChaserTimeSeconds);
 	DOREPLIFETIME(AJellyPlayerState, PlayerColorIndex);
 	
+	
 }
 
 void AJellyPlayerState::OnRep_PlayerColorIndex()
@@ -71,5 +72,4 @@ void AJellyPlayerState::OnRep_PlayerColorIndex()
 		JellyCharacter->ApplyPlayerColor();
 	}
 }
-
 

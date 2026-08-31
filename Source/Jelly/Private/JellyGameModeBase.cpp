@@ -2,7 +2,11 @@
 
 
 #include "JellyGameModeBase.h"
-
+#include "JellyStatusComponent.h"
+#include "EngineUtils.h"
+#include "GameFramework/PlayerStart.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "JellyGameStateBase.h"
 #include "JellyPlayerState.h"
 #include "Character/JellyCharacterBase.h"
@@ -23,14 +27,9 @@ void AJellyGameModeBase::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("JellyGameState is not created"));
 		return;
 	}
-	JellyGameStateBase->SetRoundPhase(EJellyRoundPhase::Waiting);
-	
-	JellyGameStateBase->SetCurrentRound(1);
-	JellyGameStateBase->SetTotalRounds(TotalRounds);
+	JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Waiting);
 	JellyGameStateBase->SetRemainingTime(0);
 	
-	// GetWorldTimerManager().SetTimer(WaitingTimerHandle, this, &AJellyGameModeBase::StartCountdown,
-	// 	1.f, false);
 	
     TryStartJellyMatch();
 }
@@ -59,8 +58,10 @@ void AJellyGameModeBase::StartCountdown()
 {
 	if (!JellyGameStateBase) return;
 	
+	GetWorldTimerManager().ClearTimer(PhaseTimerHandle);
+	
 	CountdownTimeRemaining = FMath::Max(1, CountdownDuration);
-	JellyGameStateBase->SetRoundPhase(EJellyRoundPhase::Countdown);
+	JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Countdown);
 	JellyGameStateBase->SetRemainingTime(CountdownTimeRemaining);
 
 	if (GEngine)
@@ -80,7 +81,7 @@ void AJellyGameModeBase::HandleCountdownTick()
 	if (CountdownTimeRemaining <= 0)
 	{
 		GetWorldTimerManager().ClearTimer(PhaseTimerHandle);
-		StartRound();
+		StartMatch();
 		return;
 	}
 	if (GEngine)
@@ -90,19 +91,19 @@ void AJellyGameModeBase::HandleCountdownTick()
 	}
 }
 
-void AJellyGameModeBase::StartRound()
+void AJellyGameModeBase::StartMatch()
 {
 	if (!JellyGameStateBase) return;
 	
 	if (!SelectRandomChaser())
 	{
-		JellyGameStateBase->SetRoundPhase(EJellyRoundPhase::Waiting);
+		JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Waiting);
 		return;
 	}
 	
-	RoundTimeRemaining = FMath::Max(1, RoundDuration);
-	JellyGameStateBase->SetRoundPhase(EJellyRoundPhase::Playing);
-	JellyGameStateBase->SetRemainingTime(RoundTimeRemaining);
+	MatchTimeRemaining = FMath::Max(1, MatchDuration);
+	JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Playing);
+	JellyGameStateBase->SetRemainingTime(MatchTimeRemaining);
 	ChaserPeriodStartTime = GetWorld()->GetTimeSeconds();
 	bIsTrackingChaserTime = true;
 	
@@ -111,15 +112,19 @@ void AJellyGameModeBase::StartRound()
 		GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Green, TEXT("GO"));
 	}
 	GetWorldTimerManager().SetTimer(PhaseTimerHandle,this,
-		&AJellyGameModeBase::HandleRoundTick,1.f, true);
+		&AJellyGameModeBase::HandleMatchTick,1.f, true);
 }
 
-void AJellyGameModeBase::HandleRoundTick()
+void AJellyGameModeBase::HandleMatchTick()
 {
 	if (!JellyGameStateBase) return;
-	--RoundTimeRemaining;
-	JellyGameStateBase->SetRemainingTime(RoundTimeRemaining);
-	if (RoundTimeRemaining <= 0) EndRound();
+	--MatchTimeRemaining;
+	JellyGameStateBase->SetRemainingTime(MatchTimeRemaining);
+	if (MatchTimeRemaining <= 0)
+	{
+		GetWorldTimerManager().ClearTimer(PhaseTimerHandle);
+		FinishMatch();
+	}
 	
 }
 
@@ -132,24 +137,6 @@ AJellyPlayerState* AJellyGameModeBase::FindCurrentChaser() const
 	if (JellyPlayerState && JellyPlayerState->IsChaser()) return JellyPlayerState;
 	}
 	return nullptr;
-}
-
-
-void AJellyGameModeBase::EndRound()
-{
-	GetWorldTimerManager().ClearTimer(PhaseTimerHandle);
-	if (!JellyGameStateBase) return;
-	
-	AJellyPlayerState* CurrentChaser = FindCurrentChaser();
-	
-	CommitChaserTime(CurrentChaser);
-	bIsTrackingChaserTime = false;
-	
-	JellyGameStateBase->SetRemainingTime(0);
-	JellyGameStateBase->SetRoundPhase(EJellyRoundPhase::Results);
-	
-	GetWorldTimerManager().SetTimer(ResultsTimerHandle,this, &AJellyGameModeBase::HandleResultsFinished,
-		ResultsDuration,false);
 }
 
 bool AJellyGameModeBase::SelectRandomChaser()
@@ -193,7 +180,7 @@ bool AJellyGameModeBase::TryTransferChaser(AJellyCharacterBase* Attacker, AJelly
 {
 	if (!HasAuthority()) return false;
 	
-	if (!JellyGameStateBase || JellyGameStateBase->GetRoundPhase() != EJellyRoundPhase::Playing) return false;
+	if (!JellyGameStateBase || JellyGameStateBase->GetMatchPhase() != EJellyMatchPhase::Playing) return false;
 	if (!Attacker || !Target||Attacker == Target) return false;
 	AJellyPlayerState* AttackerPlayerState = Attacker->GetPlayerState<AJellyPlayerState>();
 	AJellyPlayerState* TargetPlayerState = Target->GetPlayerState<AJellyPlayerState>();
@@ -217,27 +204,24 @@ bool AJellyGameModeBase::TryTransferChaser(AJellyCharacterBase* Attacker, AJelly
 	return true;
 }
 
-void AJellyGameModeBase::HandleResultsFinished()
-{
-	if (!JellyGameStateBase) return;
-	
-	const int32 CurrentRoundNumber = JellyGameStateBase->GetCurrentRound();
-	const int32 TotalRoundCount= JellyGameStateBase->GetTotalRounds();
-
-	if (CurrentRoundNumber>=TotalRoundCount)
-	{
-		FinishMatch();
-		return;
-	}
-	JellyGameStateBase->SetCurrentRound(CurrentRoundNumber+1);	
-StartCountdown();
-}
-
 void AJellyGameModeBase::FinishMatch()
 {
 	if (!JellyGameStateBase) return;
+	AJellyPlayerState* CurrentChaser= FindCurrentChaser();
+	CommitChaserTime(CurrentChaser);
+	
+	bIsTrackingChaserTime = false;
+	
+	GetWorldTimerManager().ClearTimer(PhaseTimerHandle);
+	
 	JellyGameStateBase->SetRemainingTime(0);
-	JellyGameStateBase->SetRoundPhase(EJellyRoundPhase::MatchFinished);
+	
+	JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Results);
+	
+	GetWorldTimerManager().ClearTimer(RestartTimerHandle);
+	
+	GetWorldTimerManager().SetTimer(RestartTimerHandle, this, &AJellyGameModeBase::RestartMatch,
+		ResultsDisplayDuraction, false);
 	
 	float LowestChaserTime = TNumericLimits<float>::Max();
 	TArray<AJellyPlayerState*> Winners;
@@ -290,6 +274,49 @@ void AJellyGameModeBase::FinishMatch()
 	}
 }
 
+void AJellyGameModeBase::RestartMatch()
+{
+	if (!HasAuthority() || !JellyGameStateBase) return;
+	
+	GetWorldTimerManager().ClearTimer(WaitingTimerHandle);
+	GetWorldTimerManager().ClearTimer(PhaseTimerHandle);
+	GetWorldTimerManager().ClearTimer(RestartTimerHandle);
+	
+	bIsTrackingChaserTime = false;
+	
+	CountdownTimeRemaining = 0;
+	MatchTimeRemaining = 0;
+	
+	for (APlayerState* PlayerState : JellyGameStateBase->PlayerArray)
+	{
+		AJellyPlayerState* JellyPlayerState  = Cast<AJellyPlayerState>(PlayerState);
+
+		if (!JellyPlayerState) continue;
+		
+		JellyPlayerState->SetIsChaser(false);
+		JellyPlayerState->ResetChaserTime();
+	}
+	
+	JellyGameStateBase->SetRemainingTime(0);
+	
+	const int32 ConnectedPlayerCount = JellyGameStateBase->PlayerArray.Num();
+	
+	const int32 RequiredPlayerCount = FMath::Max(1, MinimumPlayers);
+
+	if (ConnectedPlayerCount < RequiredPlayerCount)
+	{
+		bMatchFlowStarted = false;
+		
+		JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Waiting);
+		TryStartJellyMatch();
+		return;
+	}
+	
+	ResetPlayersForNewMatch();
+	
+	StartCountdown();
+}
+
 void AJellyGameModeBase::CommitChaserTime(AJellyPlayerState* Chaser)
 {
 	if (!bIsTrackingChaserTime || !Chaser || !GetWorld())return;
@@ -321,14 +348,14 @@ void AJellyGameModeBase::TryStartJellyMatch()
 
 	if (ConnectedPlayerCount < RequiredPlayerCount)
 	{
-		JellyGameStateBase->SetRoundPhase(EJellyRoundPhase::Waiting);
+		JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Waiting);
 		
 		JellyGameStateBase->SetRemainingTime(0);
 		return;
 	}
 	
 	bMatchFlowStarted = true;
-	GetWorldTimerManager().SetTimer(WaitingTimerHandle,this, &AJellyGameModeBase::StartRound,1.f,false);
+	GetWorldTimerManager().SetTimer(WaitingTimerHandle,this, &AJellyGameModeBase::StartCountdown,1.f,false);
 }
 
 uint8 AJellyGameModeBase::FindAvailableColorIndex() const
@@ -361,4 +388,52 @@ uint8 AJellyGameModeBase::FindAvailableColorIndex() const
 		if (!UsedColors[ColorIndex]) return ColorIndex;
 	}
 	return InvalidColorIndex;
+}
+
+void AJellyGameModeBase::ResetPlayersForNewMatch()
+{
+	UWorld* World = GetWorld();
+	if (!World) return;
+	
+	TArray<APlayerStart*> PlayerStarts;
+	
+	for (TActorIterator<APlayerStart> Iterator(World); Iterator; ++Iterator)
+	{
+		PlayerStarts.Add(*Iterator);
+	}
+	if (PlayerStarts.IsEmpty()) return;
+	
+	int32 PlayerIndex = 0;
+	
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		
+		if (!PlayerController) continue;
+		AJellyCharacterBase* Character = Cast<AJellyCharacterBase>(PlayerController->GetPawn());
+		
+		if (!Character) continue;
+		
+		APlayerStart* PlayerStart = PlayerStarts[PlayerIndex % PlayerStarts.Num()];
+		
+		++PlayerIndex;
+		
+		if (!PlayerStart) continue;
+		
+		const FVector SpawnLocation = PlayerStart->GetActorLocation();
+		const FRotator SpawnRotation = PlayerStart->GetActorRotation();
+		
+		UJellyStatusComponent* StatusComponent = Character->FindComponentByClass<UJellyStatusComponent>();
+		
+		if (StatusComponent)
+		{
+		StatusComponent->ResetForNewMatch(SpawnLocation);
+		}
+		Character->TeleportTo(SpawnLocation,SpawnRotation,false,true);
+		
+		Character->GetCharacterMovement()->StopMovementImmediately();
+		PlayerController->SetControlRotation(SpawnRotation);
+		
+		Character->ForceNetUpdate();
+	}
 }

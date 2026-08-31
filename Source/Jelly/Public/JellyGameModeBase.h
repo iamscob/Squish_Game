@@ -30,16 +30,14 @@ protected:
 	int32 CountdownDuration = 3;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Round")
-	int32 RoundDuration = 10;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Round")
-	int32 TotalRounds = 3;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Round")
-	float ResultsDuration = 3.f;
+	int32 MatchDuration = 90;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Round")
 	int32 MinimumPlayers = 1;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Round")
+	float ResultsDisplayDuraction = 3.f;
+	
 	
 	
 	virtual void  PostLogin(APlayerController* NewPlayer) override;
@@ -52,13 +50,9 @@ private:
 	
 	void HandleCountdownTick();
 	
-	void StartRound();
+	void StartMatch();
 	
-	void HandleRoundTick();
-	
-	void EndRound();
-	
-	void HandleResultsFinished();
+	void HandleMatchTick();
 	
 	void FinishMatch();
 	
@@ -66,8 +60,11 @@ private:
 	
 	void TryStartJellyMatch();
 	
-	
 	bool SelectRandomChaser();
+	
+	void RestartMatch();
+	
+	void ResetPlayersForNewMatch();
 	
 	AJellyPlayerState* FindCurrentChaser() const;
 	
@@ -78,10 +75,10 @@ private:
 	
 	FTimerHandle WaitingTimerHandle;
 	FTimerHandle PhaseTimerHandle;
-	FTimerHandle ResultsTimerHandle;
+	FTimerHandle RestartTimerHandle;
 	
 	int32 CountdownTimeRemaining = 0;
-	int32 RoundTimeRemaining = 0;
+	int32 MatchTimeRemaining = 0;
 	float ChaserPeriodStartTime = 0.f;
 	bool bIsTrackingChaserTime = false;
 	bool bMatchFlowStarted = false;

@@ -82,7 +82,7 @@ void AEquippableToolBase::OnToolHit(
 	{
 		HitDirection = -HitResult.ImpactNormal.GetSafeNormal();
 	}
-	const bool bHitApplied = HitStatus->ApplyHit(Thrower, HitDirection, true);
+	const bool bHitApplied = HitStatus->ApplyHit(Thrower, HitDirection, EJellyHitType::ThrownTool);
 	if (!bHitApplied) return;
 	bHasProcessedHit = true;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,TEXT("Throw Hit"));
@@ -92,6 +92,7 @@ void AEquippableToolBase::OnToolHit(
 void AEquippableToolBase::MulticastPrepareForThrow_Implementation(FVector ThrowStart)
 {
 	if (!ToolMeshComponent) return;
+	SetReplicateMovement(true);
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	SetActorLocation(ThrowStart,false, nullptr,ETeleportType::TeleportPhysics);
 	ToolMeshComponent->SetWorldScale3D(FVector(WorldScale));
@@ -144,24 +145,31 @@ void AEquippableToolBase::OnPickupBeginOverlap(UPrimitiveComponent* OverlappedCo
 
 void AEquippableToolBase::MulticastPrepareForHeld_Implementation(AJellyCharacterBase* NewOwningCharacter)
 {
+	ApplyHeldState(NewOwningCharacter);
+}
+
+void AEquippableToolBase::ApplyHeldState(AJellyCharacterBase* NewOwningCharacter)
+{
 	if (!NewOwningCharacter || !ToolMeshComponent ||!PickupCollisionComponent) return;
+	
+	SetReplicateMovement(false);
 	
 	PickupCollisionComponent->SetGenerateOverlapEvents(false);
 	PickupCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	ToolMeshComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);
-	
 	ToolMeshComponent->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	
-	ToolMeshComponent->SetSimulatePhysics(false);
+	ToolMeshComponent->SetSimulatePhysics(false);	
 	ToolMeshComponent->SetGenerateOverlapEvents(false);
 	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	
-	AttachToComponent(NewOwningCharacter->GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		FName(TEXT("RightHandIndex3")));
+	AttachToComponent(NewOwningCharacter->GetMesh(), 
+		FAttachmentTransformRules::SnapToTargetNotIncludingScale,FName(TEXT("RightHandIndex3")));
+	
+	SetActorRelativeLocation(FVector::ZeroVector);
+	SetActorRelativeRotation(FRotator::ZeroRotator);
 	SetActorRelativeScale3D(FVector(2.f));
 }
-
 

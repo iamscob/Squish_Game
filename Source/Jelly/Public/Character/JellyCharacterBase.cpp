@@ -11,6 +11,7 @@
 #include "EquippableToolDefinition.h"
 #include "JellyPlayerState.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "JellyGameStateBase.h"
 
 
 
@@ -82,8 +83,8 @@ void AJellyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJellyCharacterBase::Move);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJellyCharacterBase::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJellyCharacterBase::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJellyCharacterBase::HandleJumpStarted);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJellyCharacterBase::HandleJumpEnded);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered,this,&AJellyCharacterBase::Look);
 		
 		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Throw);
@@ -94,6 +95,7 @@ void AJellyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 // Input Actions Implementation
 void AJellyCharacterBase::Move(const FInputActionValue& Value)
 {
+	if (!CanUseInput()) return;
 	const FVector2D MovementValue = Value.Get<FVector2D>();
 	if (Controller)
 	{
@@ -122,7 +124,20 @@ void AJellyCharacterBase::Look(const FInputActionValue& Value)
 	}
 }
 
-	// Tool Attachment
+void AJellyCharacterBase::HandleJumpStarted()
+{
+	if (CanUseInput())
+	{
+		Jump();
+	}
+}
+
+void AJellyCharacterBase::HandleJumpEnded()
+{
+	StopJumping();
+}
+
+// Tool Attachment
 bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 {
 	if (!HasAuthority()) return false;
@@ -140,26 +155,22 @@ bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
 		GetActorTransform(),
 		SpawnParameters);
 	if (!ToolToEquip) return false;
-			
-		UStaticMesh* ToolMesh = ToolDefinition->ToolMesh.IsValid()
-		? ToolDefinition->ToolMesh.Get()
-		: ToolDefinition->ToolMesh.LoadSynchronous();
+	
+	UStaticMesh* ToolMesh = ToolDefinition->ToolMesh.IsValid()
+	? ToolDefinition->ToolMesh.Get()
+	: ToolDefinition->ToolMesh.LoadSynchronous();
 
-		if (!ToolMesh || !ToolToEquip->ToolMeshComponent)
+	if (!ToolMesh || !ToolToEquip->ToolMeshComponent)
 		{
 			ToolToEquip->Destroy();
 			return false;
 		}
 	ToolToEquip->ToolMeshComponent->SetStaticMesh(ToolMesh);
 	
-	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	ToolToEquip->ApplyHeldState(this);
 	
-		
-		ToolToEquip->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("RightHandIndex3")));
-		ToolToEquip->SetActorRelativeScale3D(FVector(2.f));
-	
-		ToolToEquip->OwningCharacter = this;
-		EquippedTool = ToolToEquip;
+	ToolToEquip->OwningCharacter = this;
+	EquippedTool = ToolToEquip;
 	AddToolMappingContext(ToolToEquip);
 	
 	ForceNetUpdate();
@@ -226,6 +237,7 @@ void AJellyCharacterBase::RemoveToolMappingContext(AEquippableToolBase* Tool)
 // Throw Tool fun
 void AJellyCharacterBase::Throw()
 {
+	if (!CanUseInput()) return;
 	if (!EquippedTool)
 	{
 		if (GEngine)
@@ -245,38 +257,9 @@ void AJellyCharacterBase::Throw()
 
 }
 
-
-//DropTool Function
-void AJellyCharacterBase::Drop()
-{
-	if (!EquippedTool)
-	{
-		return;
-	}
-	RemoveToolMappingContext(EquippedTool);
-	
-	FVector DropDirection = FVector(0, 0, -1);
-	EquippedTool->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	
-	FRotator CharacterRotation = GetActorRotation();
-	FVector ForwardVector = FRotator(.0f, CharacterRotation.Yaw, .0f).Vector();
-	FVector ThrowStart = EquippedTool->GetActorLocation()+ (ForwardVector * 100.f);
-	EquippedTool->SetActorLocation(ThrowStart);
-	
-	EquippedTool->ToolMeshComponent->SetWorldScale3D(FVector(EquippedTool->WorldScale));
-	
-	EquippedTool->ToolMeshComponent->SetSimulatePhysics(true);
-	EquippedTool->ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	EquippedTool->ToolMeshComponent->SetCollisionProfileName("PhysicsActor");
-	float LaunchForce = 50.f;
-	EquippedTool->ToolMeshComponent->AddImpulse(DropDirection * LaunchForce, NAME_None, true);
-	
-	EquippedTool = nullptr;
-
-}
-
 void AJellyCharacterBase::MeleeAttack()
-{
+{	
+	if (!CanUseInput()) return;
 	if (CombatComponent)
 	{
 		CombatComponent->MeleeAttack();
@@ -360,11 +343,11 @@ void AJellyCharacterBase::OnRep_EquippedTool()
 	}
 	LocallyMappedTool = EquippedTool;
 
-	if (EquippedTool)
-	{
-		EquippedTool->SetActorRelativeScale3D(FVector(2.f));
-		AddToolMappingContext(EquippedTool);
-	}
+	if (!EquippedTool) return;
+	
+	EquippedTool->ApplyHeldState(this);
+	AddToolMappingContext(EquippedTool);
+	
 }
 
 void AJellyCharacterBase::ServerThrow_Implementation()
@@ -374,7 +357,7 @@ void AJellyCharacterBase::ServerThrow_Implementation()
 
 void AJellyCharacterBase::PerformThrow()
 {
-	if (!HasAuthority() || !EquippedTool || !EquippedTool->ToolMeshComponent) return;
+	if (!HasAuthority() || !CanUseInput() || !EquippedTool || !EquippedTool->ToolMeshComponent) return;
 	
 	AEquippableToolBase* ToolToThrow = EquippedTool;
 	
@@ -422,4 +405,19 @@ bool AJellyCharacterBase::AttachExistingTool(AEquippableToolBase* ToolToEquip)
 	ToolToEquip->ForceNetUpdate();
 	
 	return true;
+}
+
+bool AJellyCharacterBase::CanUseInput() const
+{
+	const UWorld *World = GetWorld();
+	if (!World) return false;
+	
+	const AJellyGameStateBase* JellyGameState = World->GetGameState<AJellyGameStateBase>();
+
+	if (!JellyGameState) return false;
+	
+	const bool bMatchIsPlaying = JellyGameState->GetMatchPhase() == EJellyMatchPhase::Playing;
+	
+	const bool bCharacterCanAct = !StatusComponent || !StatusComponent->bIsStunned;
+	return bMatchIsPlaying && bCharacterCanAct;
 }

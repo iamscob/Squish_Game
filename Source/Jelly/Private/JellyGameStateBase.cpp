@@ -4,47 +4,26 @@
 #include "JellyGameStateBase.h"
 #include "Net/UnrealNetwork.h"
 
-EJellyRoundPhase AJellyGameStateBase::GetRoundPhase() const
+EJellyMatchPhase AJellyGameStateBase::GetMatchPhase() const
 {
-	return RoundPhase;
+	return MatchPhase;
 }
 
-int32 AJellyGameStateBase::GetCurrentRound() const
-{
-	return CurrentRound;
-}
 
-int32 AJellyGameStateBase::GetTotalRounds() const
-{
-	return TotalRounds;
-}
 
 int32 AJellyGameStateBase::GetRemainingTime() const
 {
 	return RemaningTime;
 }
 
-void AJellyGameStateBase::SetRoundPhase(EJellyRoundPhase NewPhase)
+void AJellyGameStateBase::SetMatchPhase(EJellyMatchPhase NewPhase)
 {
 	if (!HasAuthority()) return;
-	RoundPhase = NewPhase;
+	MatchPhase = NewPhase;
 	ForceNetUpdate();
 }
 
-void AJellyGameStateBase::SetCurrentRound(int32 NewCurrentRound)
-{
-	if (!HasAuthority()) return;
-	CurrentRound = FMath::Max(0, NewCurrentRound);
-	ForceNetUpdate();
-	
-}
 
-void AJellyGameStateBase::SetTotalRounds(int32 NewTotalRounds)
-{
-	if (!HasAuthority()) return;
-	TotalRounds = FMath::Max(1, NewTotalRounds);
-	ForceNetUpdate();
-}
 
 void AJellyGameStateBase::SetRemainingTime(int32 NewRemaningTime)
 {
@@ -57,9 +36,7 @@ void AJellyGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(AJellyGameStateBase, RoundPhase);
-	DOREPLIFETIME(AJellyGameStateBase, CurrentRound);
-	DOREPLIFETIME(AJellyGameStateBase, TotalRounds);
+	DOREPLIFETIME(AJellyGameStateBase, MatchPhase);
 	DOREPLIFETIME(AJellyGameStateBase, RemaningTime);
 }
 
