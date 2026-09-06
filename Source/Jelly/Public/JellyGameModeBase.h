@@ -20,8 +20,11 @@ class JELLY_API AJellyGameModeBase : public AGameModeBase
 public:
 	
 	AJellyGameModeBase();
+	
 	bool TryTransferChaser(AJellyCharacterBase* Attacker, AJellyCharacterBase* Target);
-
+	
+	void RespawnCharacter(AJellyCharacterBase* Character);
+	
 protected:
 	
 	virtual void BeginPlay() override;

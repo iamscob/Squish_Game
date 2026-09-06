@@ -23,6 +23,7 @@ class UInventoryComponent;
 class UJellyStatusComponent;
 class UJelloCombatComponent;
 class UMaterialInstanceDynamic;
+class UDashComponent;
 
 UCLASS()
 class JELLY_API AJellyCharacterBase : public ACharacter
@@ -58,7 +59,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Input")
 	TObjectPtr<UInputAction> MeleeAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> DashAction;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Movement")
+	float RunnerWalkSpeed = 600.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Movement")
+	float ChaserWalkSpeed = 615.f;
+	
+
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedTool,VisibleAnywhere, BlueprintReadOnly, Category = "Tools")
 	TObjectPtr<AEquippableToolBase> EquippedTool;
 	
@@ -90,7 +100,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
 	TObjectPtr<UJelloCombatComponent> CombatComponent;
 	
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UDashComponent> DashComponent;
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Jelly|Color")
 	int32 PlayerColorMaterialIndex = 0;
@@ -124,6 +135,10 @@ private:
 	
 	void HandleJumpEnded();
 	
+	void Dash();
+	
+	
+	
 	TWeakObjectPtr<AEquippableToolBase> LocallyMappedTool;
 	
 public:	
@@ -146,6 +161,7 @@ public:
 	UFUNCTION()
 	void MeleeAttack();
 	
+
 	UFUNCTION()
 	bool AttachTool(UEquippableToolDefinition* ToolDefinition);
 	
@@ -157,11 +173,14 @@ public:
 	
 	void ApplyPlayerColor();
 	
+	void ApplyRoleMovementSpeed();
+	
 	UFUNCTION(BlueprintPure, Category = "Jelly|Tool")
 	bool HasEquippedTool() const;
 	
 	UFUNCTION(BlueprintPure, Category="Jelly|Match")
 	bool CanUseInput() const;
 	
-	
+	UFUNCTION(BlueprintPure, Category = "Jelly|Tool")
+	AEquippableToolBase* GetEquippedTool() const;
 };

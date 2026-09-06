@@ -9,6 +9,7 @@
 class UTextBlock;
 class UBorder;
 class UWidget;
+class UWidgetAnimation;
 
 UCLASS()
 class JELLY_API UJellyHUDWidget : public UUserWidget
@@ -47,9 +48,41 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> ResultsText;
 	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UWidget> SB_ToolPanel;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> ToolNameText;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> ToolHintText;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UWidget> SB_TransferMessage;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> TransferText;
+	
+	UPROPERTY(Transient, meta=(BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation>Anim_YouAreChaser;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UWidget> IMG_Vignette;
+	
+	UPROPERTY(Transient, meta=(BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation>Anim_Vignette;
+	
 private:
 	
 	void RefreshHUD();
 	
 	FTimerHandle HUDRefreshTimerHandle;
+	
+	bool bHasCachedChaserState = false;
+	bool bWasChaser = false;
+	
+	FTimerHandle TransferMessageTimerHandle;
+	
+	void ShowTransferMessage();
+	void HideTransferMessage();
 };

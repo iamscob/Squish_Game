@@ -98,6 +98,7 @@ void AEquippableToolBase::MulticastPrepareForThrow_Implementation(FVector ThrowS
 	ToolMeshComponent->SetWorldScale3D(FVector(WorldScale));
 	ToolMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
 	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ToolMeshComponent->SetGenerateOverlapEvents(true);
 	ToolMeshComponent->SetSimulatePhysics(true);
 	ToolMeshComponent->WakeAllRigidBodies();
 }
@@ -173,3 +174,42 @@ void AEquippableToolBase::ApplyHeldState(AJellyCharacterBase* NewOwningCharacter
 	SetActorRelativeScale3D(FVector(2.f));
 }
 
+void AEquippableToolBase::ReturnToArena(const FTransform& ReturnTransform)
+{
+	if (!HasAuthority() || OwningCharacter || !ToolMeshComponent) return;
+	
+	Thrower = nullptr;
+	bThrowerWasChasing = false;
+	bHasProcessedHit = false;
+	SetOwner(nullptr);
+	SetInstigator(nullptr);
+	
+	MulticastReturnToArena(ReturnTransform.GetLocation(),ReturnTransform.Rotator());
+	
+	StartPickupCooldown();
+	
+	ForceNetUpdate();
+}
+
+void AEquippableToolBase::MulticastReturnToArena_Implementation(FVector ReturnLocation, FRotator ReturnRotation)
+{
+	if (!ToolMeshComponent) return;
+	
+	SetReplicateMovement(true);
+	
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+	ToolMeshComponent->SetSimulatePhysics(false);
+	ToolMeshComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	ToolMeshComponent->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	
+	SetActorLocationAndRotation(ReturnLocation,ReturnRotation,false,nullptr,ETeleportType::TeleportPhysics);
+	
+	SetActorScale3D(FVector(WorldScale));
+	
+	ToolMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
+	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ToolMeshComponent->SetGenerateOverlapEvents(true);
+	ToolMeshComponent->SetSimulatePhysics(true);
+	ToolMeshComponent->WakeAllRigidBodies();
+}

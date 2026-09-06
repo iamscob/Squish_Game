@@ -40,6 +40,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Ragdoll")
 	float RagdollBlendDuration = .2f;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Protection")
+	float RecoveryProtectionDuration = 1.2f;
+	
 private:
 	
 	FTimerHandle StunTimerHandle;
@@ -47,7 +50,12 @@ private:
 	
 	FVector PreRagdollLocation;
 	FRotator PreRagdollRotation;
-
+	
+	float ProtectionEndTime = 0.f;
+	
+	bool IsProtected() const;
+	
+	void GrantProtection(float Duration);
 	
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastStartRagdoll(FVector LaunchVelocity);

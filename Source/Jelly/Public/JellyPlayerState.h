@@ -37,7 +37,7 @@ protected:
 
 private:
 	
-	UPROPERTY(Replicated,VisibleAnywhere,BlueprintReadOnly,Category = "Jelly|Round", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(ReplicatedUsing = OnRep_IsChaser,VisibleAnywhere,BlueprintReadOnly,Category = "Jelly|Round", meta = (AllowPrivateAccess = "true"))
 	bool bIsChaser = false;
 	
 	UPROPERTY(Replicated,VisibleAnywhere,BlueprintReadOnly,Category = "Jelly|Round", meta = (AllowPrivateAccess = "true"))
@@ -49,6 +49,9 @@ private:
 	
 	UFUNCTION()
 	void OnRep_PlayerColorIndex();
+	
+	UFUNCTION()
+	void OnRep_IsChaser();
 };
 
 

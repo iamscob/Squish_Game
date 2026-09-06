@@ -55,6 +55,27 @@ void UJellyStatusComponent::SetIsChasing(bool bNewIsChasing)
 	}
 }
 
+bool UJellyStatusComponent::IsProtected() const
+{
+	const UWorld* World = GetWorld();
+	
+	if (!World) return false;
+	
+	return IsChasing() && World->GetTimeSeconds() < ProtectionEndTime;
+}
+
+void UJellyStatusComponent::GrantProtection(float Duration)
+{
+	AActor* OwnerActor = GetOwner();
+	UWorld* World = GetWorld();
+
+	if (!OwnerActor || !OwnerActor->HasAuthority() || !World || Duration <= 0.f) return;
+	
+	const float NewProtectionEndTime = World->GetTimeSeconds() + Duration;
+	
+	ProtectionEndTime = FMath::Max(ProtectionEndTime, NewProtectionEndTime);
+}
+
 bool UJellyStatusComponent::ApplyHit(AJellyCharacterBase* Attacker, const FVector& HitDirection, EJellyHitType HitType)
 	{
 	AActor* OwnerActor = GetOwner();
@@ -68,6 +89,12 @@ bool UJellyStatusComponent::ApplyHit(AJellyCharacterBase* Attacker, const FVecto
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
 	
 	if (!OwnerCharacter || !Attacker || Attacker == OwnerCharacter||bIsStunned) return false;
+	
+	if (IsProtected())
+	{
+		//HIT Protection
+		return false;
+	}
 	
 	UJellyStatusComponent* AttackerStatus = Attacker->FindComponentByClass<UJellyStatusComponent>();
 	
@@ -161,6 +188,15 @@ void UJellyStatusComponent::RecoverFromStun()
 	bIsStunned = false;
 	
 	MulticastRecoverFromStun(SafeCapsuleLocation);
+
+	if (IsChasing())
+	{
+		GrantProtection(RecoveryProtectionDuration);
+	}
+	else
+	{
+		ProtectionEndTime = 0.f;
+	}
 	
 }
 
@@ -193,9 +229,11 @@ void UJellyStatusComponent::MulticastStartRagdoll_Implementation(FVector LaunchV
 	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	OwnerCharacter->GetMesh()->SetSimulatePhysics(true);
 	OwnerCharacter->GetMesh()->SetPhysicsBlendWeight(1.f);
+	OwnerCharacter->GetMesh()->SetGenerateOverlapEvents(true);
 	OwnerCharacter->GetMesh()->SetAllBodiesSimulatePhysics(true);
 	OwnerCharacter->GetCharacterMovement()->DisableMovement();
 	OwnerCharacter->GetMesh()->AddImpulse(LaunchVelocity, NAME_None,true);
+
 }
 
 void UJellyStatusComponent::MulticastRecoverFromStun_Implementation(FVector RecoveryLocation)
@@ -211,6 +249,7 @@ void UJellyStatusComponent::MulticastRecoverFromStun_Implementation(FVector Reco
 	OwnerCharacter->GetMesh()->SetPhysicsBlendWeight(0.f);
 	OwnerCharacter->GetMesh()->SetAllBodiesSimulatePhysics(false);
 	OwnerCharacter->GetMesh()->SetSimulatePhysics(false);
+	OwnerCharacter->GetMesh()->SetGenerateOverlapEvents(false);
 	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	OwnerCharacter->GetCapsuleComponent()->SetWorldLocation(RecoveryLocation,false,nullptr,ETeleportType::TeleportPhysics);
@@ -234,7 +273,9 @@ void UJellyStatusComponent::ResetForNewMatch(const FVector& SpawnLocation)
 	
 	bIsStunned = false;
 	
-	MulticastRecoverFromStun_Implementation(SpawnLocation);
+	ProtectionEndTime = 0.f;
+	
+	MulticastRecoverFromStun(SpawnLocation);
 	
 	OwnerCharacter->ForceNetUpdate();
 }

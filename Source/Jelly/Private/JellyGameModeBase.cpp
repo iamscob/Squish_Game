@@ -437,3 +437,37 @@ void AJellyGameModeBase::ResetPlayersForNewMatch()
 		Character->ForceNetUpdate();
 	}
 }
+
+void AJellyGameModeBase::RespawnCharacter(AJellyCharacterBase* Character)
+{
+	if (!HasAuthority() || !Character) return;
+	
+	AController* CharacterController = Character->GetController();
+	
+	if (!CharacterController) return;
+	
+	AActor* StartSpot = FindPlayerStart(CharacterController);
+	
+	if (!StartSpot) return;
+	
+	const FVector SpawnLocation = StartSpot->GetActorLocation();
+	const FRotator SpawnRotation = StartSpot->GetActorRotation();
+	
+	UJellyStatusComponent* StatusComponent = Character->FindComponentByClass<UJellyStatusComponent>();
+
+	if (StatusComponent)
+	{
+		StatusComponent->ResetForNewMatch(SpawnLocation);
+	}
+	
+	Character->TeleportTo(SpawnLocation,SpawnRotation,false, true);
+	
+	if (UCharacterMovementComponent* Movement = Character->GetCharacterMovement())
+	{
+		Movement->StopMovementImmediately();
+		
+	}
+	CharacterController->SetControlRotation(SpawnRotation);
+	
+	Character->ForceNetUpdate();
+}

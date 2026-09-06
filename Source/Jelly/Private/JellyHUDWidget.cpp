@@ -9,10 +9,23 @@
 #include "JellyPlayerState.h"
 #include "JellyGameStateBase.h"
 #include "TimerManager.h"
+#include  "EquippableToolBase.h"
+#include "Character/JellyCharacterBase.h"
 
 void UJellyHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (SB_TransferMessage)
+	{
+		SB_TransferMessage->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	
+	if (IMG_Vignette)
+	{
+		IMG_Vignette->SetVisibility(ESlateVisibility::HitTestInvisible);
+		IMG_Vignette->SetRenderOpacity(0.f);
+	}
 	
 	RefreshHUD();
 
@@ -20,6 +33,9 @@ void UJellyHUDWidget::NativeConstruct()
 	{
 		GetWorld()->GetTimerManager().SetTimer(HUDRefreshTimerHandle,this, &UJellyHUDWidget::RefreshHUD,.2f,true);
 	}
+
+
+	
 }
 
 void UJellyHUDWidget::NativeDestruct()
@@ -28,6 +44,9 @@ void UJellyHUDWidget::NativeDestruct()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(HUDRefreshTimerHandle);
 	}
+	
+	GetWorld()->GetTimerManager().ClearTimer(TransferMessageTimerHandle);
+	
 	Super::NativeDestruct();
 }
 
@@ -149,7 +168,32 @@ void UJellyHUDWidget::RefreshHUD()
 				ResultsText->SetText(FText::FromString(ResultLines));
 			}	
 		}
-	}	
+	}
+
+	if (SB_ToolPanel && ToolNameText && ToolHintText)
+	{
+		APlayerController* ToolPlayerController = GetOwningPlayer();
+		
+		AJellyCharacterBase* LocalCharacter = ToolPlayerController 
+		? Cast<AJellyCharacterBase>(ToolPlayerController->GetPawn()) : nullptr;
+	
+		AEquippableToolBase* CurrentTool = LocalCharacter ? LocalCharacter->GetEquippedTool() : nullptr;
+		
+		SB_ToolPanel->SetVisibility(ESlateVisibility::HitTestInvisible);
+		
+		if (CurrentTool)
+		{
+			const FText DisplayName = CurrentTool->ToolDisplayName;
+			ToolNameText->SetText(DisplayName);
+			ToolHintText->SetText(FText::FromString(TEXT("CTRL")));
+		}
+		else
+		{
+			ToolNameText->SetText(FText::FromString(TEXT("EMPTY")));
+			ToolHintText->SetText(FText::FromString(TEXT("NO TOOL")));
+		}
+	
+	}
 	
 	if (!SB_RolePanel || !RoleText || !Border_RoleBG) return;
 	
@@ -159,6 +203,30 @@ void UJellyHUDWidget::RefreshHUD()
 	
 	const AJellyPlayerState* JellyPlayerState = PlayerController
 	? PlayerController->GetPlayerState<AJellyPlayerState>() : nullptr;
+	
+	if (JellyPlayerState)
+	{
+		const bool bIsChaserNow = JellyPlayerState->IsChaser();
+
+		if (!bHasCachedChaserState)
+		{
+			bHasCachedChaserState = true;
+			bWasChaser = bIsChaserNow;
+
+			if (bIsChaserNow)
+			{
+				ShowTransferMessage();
+			}
+		}
+		else
+		{
+			if (!bWasChaser && bIsChaserNow)
+			{
+				ShowTransferMessage();
+			}
+			bWasChaser = bIsChaserNow;
+		}
+	}
 
 	if (!bShouldShowRole || !JellyPlayerState)
 	{
@@ -175,4 +243,38 @@ void UJellyHUDWidget::RefreshHUD()
 	const FLinearColor RoleColor = bIsChaser ? FLinearColor::Red 
 	: FLinearColor::Green;
 	Border_RoleBG->SetBrushColor(RoleColor);
+}
+
+void UJellyHUDWidget::ShowTransferMessage()
+{
+	UWorld* World = GetWorld();
+	if (!World || !SB_TransferMessage) return;
+
+	SB_TransferMessage->SetVisibility(ESlateVisibility::HitTestInvisible);
+	if (Anim_YouAreChaser)
+	{
+		StopAnimation(Anim_YouAreChaser);
+		PlayAnimation(Anim_YouAreChaser);
+	}
+		
+
+	
+	if (IMG_Vignette && Anim_Vignette)
+	{
+		IMG_Vignette->SetVisibility(ESlateVisibility::HitTestInvisible);
+		StopAnimation(Anim_Vignette);
+		PlayAnimation(Anim_Vignette);
+	}
+	
+	World->GetTimerManager().ClearTimer(TransferMessageTimerHandle);
+	World->GetTimerManager().SetTimer(TransferMessageTimerHandle,this, &UJellyHUDWidget::HideTransferMessage,1.2f, false);
+	
+}
+
+void UJellyHUDWidget::HideTransferMessage()
+{
+	if (SB_TransferMessage)
+	{
+		SB_TransferMessage->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }

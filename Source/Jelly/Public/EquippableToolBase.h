@@ -44,10 +44,12 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Tool|Pickup")
 	TObjectPtr<USphereComponent> PickupCollisionComponent;	
 	
-	
 	UPROPERTY()
 	TObjectPtr<AJellyCharacterBase> Thrower;
 		
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Tool|UI")
+	FText ToolDisplayName = FText::FromString(TEXT("Tool"));
+	
 	UFUNCTION()
 	void OnToolHit(
 		UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
@@ -92,5 +94,10 @@ public:
 	void ResetProcessedHit();
 	
 	void ApplyHeldState(AJellyCharacterBase* NewOwningCharacter);
+	
+	void ReturnToArena(const FTransform& ReturnTransform);
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastReturnToArena(FVector ReturnLocation, FRotator ReturnRotation);
 
 };

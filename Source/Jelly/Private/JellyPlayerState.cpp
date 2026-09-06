@@ -16,11 +16,20 @@ float AJellyPlayerState::GetChaserTime() const
 
 void AJellyPlayerState::SetIsChaser(bool bIsNewChaser)
 {
-	if (!HasAuthority()) return;
-	if (bIsChaser == bIsNewChaser) return;
+	if (!HasAuthority() || bIsChaser == bIsNewChaser) return;
 	
 	bIsChaser = bIsNewChaser;
+	
+	OnRep_IsChaser();
 	ForceNetUpdate();
+}
+
+void AJellyPlayerState::OnRep_IsChaser()
+{
+	AJellyCharacterBase* JellyCharacter = Cast<AJellyCharacterBase>(GetPawn());
+	
+	if (!JellyCharacter) return;
+	JellyCharacter->ApplyRoleMovementSpeed();
 }
 
 void AJellyPlayerState::AddChaserTime(float Seconds)

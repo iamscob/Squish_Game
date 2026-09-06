@@ -12,9 +12,8 @@
 #include "JellyPlayerState.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "JellyGameStateBase.h"
-
-
-
+#include "GameFramework/CharacterMovementComponent.h"
+#include "DashComponent.h"
 
 
 // Sets default values
@@ -45,6 +44,7 @@ AJellyCharacterBase::AJellyCharacterBase()
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	StatusComponent = CreateDefaultSubobject<UJellyStatusComponent>(TEXT("StatusComponent"));
 	CombatComponent = CreateDefaultSubobject<UJelloCombatComponent>(TEXT("CombatComponent"));
+	DashComponent = CreateDefaultSubobject<UDashComponent>(TEXT("DashComponent"));
 	
 
 }
@@ -86,16 +86,17 @@ void AJellyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJellyCharacterBase::HandleJumpStarted);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJellyCharacterBase::HandleJumpEnded);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered,this,&AJellyCharacterBase::Look);
-		
 		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started, this, &AJellyCharacterBase::Throw);
 		EnhancedInputComponent->BindAction(MeleeAction,ETriggerEvent::Started,this, &AJellyCharacterBase::MeleeAttack);
+		EnhancedInputComponent->BindAction(DashAction,ETriggerEvent::Started,this, &AJellyCharacterBase::Dash);
+
 	}
 	
 }
 // Input Actions Implementation
 void AJellyCharacterBase::Move(const FInputActionValue& Value)
 {
-	if (!CanUseInput()) return;
+	if (!CanUseInput() || (DashComponent && DashComponent->IsDashing())) return;
 	const FVector2D MovementValue = Value.Get<FVector2D>();
 	if (Controller)
 	{
@@ -135,6 +136,14 @@ void AJellyCharacterBase::HandleJumpStarted()
 void AJellyCharacterBase::HandleJumpEnded()
 {
 	StopJumping();
+}
+
+void AJellyCharacterBase::Dash()
+{
+	if (DashComponent)
+	{
+		DashComponent->TryDash();
+	}
 }
 
 // Tool Attachment
@@ -270,12 +279,14 @@ void AJellyCharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	ApplyPlayerColor();
+	ApplyRoleMovementSpeed();
 }
 
 void AJellyCharacterBase::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	ApplyPlayerColor();
+	ApplyRoleMovementSpeed();
 }
 
 void AJellyCharacterBase::ApplyPlayerColor()
@@ -308,6 +319,11 @@ void AJellyCharacterBase::ApplyPlayerColor()
 bool AJellyCharacterBase::HasEquippedTool() const
 {
 	return IsValid(EquippedTool);
+}
+
+AEquippableToolBase* AJellyCharacterBase::GetEquippedTool() const
+{
+	return EquippedTool;
 }
 
 void AJellyCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -420,4 +436,16 @@ bool AJellyCharacterBase::CanUseInput() const
 	
 	const bool bCharacterCanAct = !StatusComponent || !StatusComponent->bIsStunned;
 	return bMatchIsPlaying && bCharacterCanAct;
+}
+
+void AJellyCharacterBase::ApplyRoleMovementSpeed()
+{
+	UCharacterMovementComponent* Movement = GetCharacterMovement();
+	
+	const AJellyPlayerState* JellyPlayerState = GetPlayerState<AJellyPlayerState>();
+	
+	if (!Movement || !JellyPlayerState) return;
+	
+	Movement->MaxWalkSpeed = JellyPlayerState->IsChaser() ? ChaserWalkSpeed : RunnerWalkSpeed;
+	
 }

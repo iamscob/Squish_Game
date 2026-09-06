@@ -69,7 +69,7 @@ void UJelloCombatComponent::PerformMeleeAttack()
 	
 	const EJellyHitType HitType = bHasTool ? EJellyHitType::ToolMelee : EJellyHitType::HandMelee;
 	
-	const float AttackRange = bHasTool ? 300.f : 150.f;
+	const float AttackRange = bHasTool ? 300.f : 120.f;
 	
 	const float AttackRadius = bHasTool ? 70.f : 50.f;
 	
@@ -84,7 +84,7 @@ void UJelloCombatComponent::PerformMeleeAttack()
 	LastMeleeTime = CurrentTime;
 	
 	const FVector Start = OwnerCharacter->GetActorLocation() + FVector(0.f,0.f,80.f);
-	const FVector End = Start + (OwnerCharacter->GetActorForwardVector() * 300.f);
+	const FVector End = Start + (OwnerCharacter->GetActorForwardVector() * AttackRange);
 	float Radius = 70.f;
 	
 	TArray<FHitResult> HitResults;
@@ -97,7 +97,7 @@ void UJelloCombatComponent::PerformMeleeAttack()
 		End,
 		FQuat::Identity,
 		ECC_Pawn,
-		FCollisionShape::MakeSphere(Radius),
+		FCollisionShape::MakeSphere(AttackRadius),
 		QueryParams
 		);
 	
