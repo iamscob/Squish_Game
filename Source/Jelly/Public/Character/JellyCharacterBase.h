@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+
 
 #pragma once
 
@@ -10,6 +10,7 @@
 #include "InputActionValue.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "JellyCharacterBase.generated.h"
+
 
 
 class UAnimBlueprint;
@@ -24,6 +25,8 @@ class UJellyStatusComponent;
 class UJelloCombatComponent;
 class UMaterialInstanceDynamic;
 class UDashComponent;
+class UDecalComponent;
+class UAnimMontage;
 
 UCLASS()
 class JELLY_API AJellyCharacterBase : public ACharacter
@@ -67,7 +70,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Movement")
 	float ChaserWalkSpeed = 615.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Throw")
+	TObjectPtr<UAnimMontage> ThrowMontage;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jelly|Combat")
+	TObjectPtr<UAnimMontage> MeleeMontage;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedTool,VisibleAnywhere, BlueprintReadOnly, Category = "Tools")
 	TObjectPtr<AEquippableToolBase> EquippedTool;
@@ -112,10 +120,23 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic>PlayerColorMaterial;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Jelly|Indicators")
+	TObjectPtr<UDecalComponent> PlayerRingDecal;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<UMaterialInstanceDynamic>PlayerRingMaterial;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Jelly|Indicators")
+	TObjectPtr<UDecalComponent> ThrowAimDecal;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<UMaterialInstanceDynamic> ThrowAimMaterial;	
 	
 	virtual void PossessedBy(AController* NewController) override;
 	
 	virtual void OnRep_PlayerState() override;
+	
+	virtual void PawnClientRestart() override;
 
 private:
 
@@ -125,9 +146,15 @@ private:
 	void OnRep_EquippedTool();
 	
 	UFUNCTION(Server, Reliable)
-	void ServerThrow();
+	void ServerThrow(AEquippableToolBase* ExpectedTool, FVector_NetQuantizeNormal ThrowDirection);
 	
-	void PerformThrow();
+	UFUNCTION(Server, Reliable)
+	void ServerPlayMeleeMontage();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayMeleeMontage();
+	
+	void PerformThrow(const FVector& ThrowDirection);
 	
 	void AddToolMappingContext(AEquippableToolBase* Tool);
 	
@@ -137,14 +164,27 @@ private:
 	
 	void Dash();
 	
-	
+	bool bIsPreparingThrow = false;	
 	
 	TWeakObjectPtr<AEquippableToolBase> LocallyMappedTool;
 	
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void SetThrowAimVisible(bool bVisible);
+	
+	float ThrowAnimAlpha = 0.f;
+	
+	bool bMeleeHitPending = false;
+	
+	bool bThrowReleasePending = false;
+	
+	FVector PendingThrowDirection = FVector::ForwardVector;
+	
+	TWeakObjectPtr<AEquippableToolBase> PendingThrowTool;
+	
 
+	
+public:
+	
+	virtual void Tick(float DeltaTime) override;
 	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -155,12 +195,23 @@ public:
 	UFUNCTION()
 	void Look(const FInputActionValue& Value);
 	
+	UFUNCTION(BlueprintCallable, Category = "Jelly|Throw" )
+	void HandleThrowReady();
+	
+	UFUNCTION(BlueprintCallable, Category = "Jelly|Throw" )
+	void HandleThrowRelease();
+	
 	UFUNCTION()
-	void Throw();
+	void StartPreparingThrow();
+	
+	UFUNCTION()
+	void ReleasePreparedThrow();
+	
+	UFUNCTION()
+	void CancelPreparingThrow();
 	
 	UFUNCTION()
 	void MeleeAttack();
-	
 
 	UFUNCTION()
 	bool AttachTool(UEquippableToolDefinition* ToolDefinition);
@@ -183,4 +234,7 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Jelly|Tool")
 	AEquippableToolBase* GetEquippedTool() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Jelly|Combat")
+	void HandleMeleeHit();
 };

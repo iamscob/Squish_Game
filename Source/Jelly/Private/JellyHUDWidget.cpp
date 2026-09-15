@@ -26,6 +26,9 @@ void UJellyHUDWidget::NativeConstruct()
 		IMG_Vignette->SetVisibility(ESlateVisibility::HitTestInvisible);
 		IMG_Vignette->SetRenderOpacity(0.f);
 	}
+	{
+		
+	}
 	
 	RefreshHUD();
 
@@ -33,8 +36,7 @@ void UJellyHUDWidget::NativeConstruct()
 	{
 		GetWorld()->GetTimerManager().SetTimer(HUDRefreshTimerHandle,this, &UJellyHUDWidget::RefreshHUD,.2f,true);
 	}
-
-
+	
 	
 }
 
@@ -43,9 +45,8 @@ void UJellyHUDWidget::NativeDestruct()
 	if (GetWorld())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(HUDRefreshTimerHandle);
+		GetWorld()->GetTimerManager().ClearTimer(TransferMessageTimerHandle);
 	}
-	
-	GetWorld()->GetTimerManager().ClearTimer(TransferMessageTimerHandle);
 	
 	Super::NativeDestruct();
 }

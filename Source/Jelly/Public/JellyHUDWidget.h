@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -10,6 +9,7 @@ class UTextBlock;
 class UBorder;
 class UWidget;
 class UWidgetAnimation;
+
 
 UCLASS()
 class JELLY_API UJellyHUDWidget : public UUserWidget
@@ -71,6 +71,8 @@ protected:
 	
 	UPROPERTY(Transient, meta=(BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation>Anim_Vignette;
+
+
 	
 private:
 	

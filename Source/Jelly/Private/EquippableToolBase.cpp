@@ -19,6 +19,7 @@ AEquippableToolBase::AEquippableToolBase()
 	ToolMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ToolMesh"));
 	check(ToolMeshComponent!=nullptr);
 	SetRootComponent(ToolMeshComponent);
+	ToolMeshComponent->SetReceivesDecals(false);
 	
 	ToolMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ToolMeshComponent->SetGenerateOverlapEvents(false);
