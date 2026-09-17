@@ -137,6 +137,8 @@ protected:
 	virtual void OnRep_PlayerState() override;
 	
 	virtual void PawnClientRestart() override;
+	
+
 
 private:
 
@@ -180,7 +182,23 @@ private:
 	
 	TWeakObjectPtr<AEquippableToolBase> PendingThrowTool;
 	
-
+	UFUNCTION(Server, Reliable)
+	void ServerStartThrowMontage(AEquippableToolBase* ExpectedTool);
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastStartThrowMontage();
+	
+	UFUNCTION(Server, Reliable)
+	void ServerResumeThrowMontage(AEquippableToolBase* ExpectedTool);
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastResumeThrowMontage();
+	
+	UFUNCTION(Server, Reliable)
+	void ServerCancelThrowMontage();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastCancelThrowMontage();
 	
 public:
 	
@@ -226,6 +244,9 @@ public:
 	
 	void ApplyRoleMovementSpeed();
 	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Jelly|Indicators")
+	void SetChaserIndicatorVisible(bool bVisible);
+	
 	UFUNCTION(BlueprintPure, Category = "Jelly|Tool")
 	bool HasEquippedTool() const;
 	
@@ -237,4 +258,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Jelly|Combat")
 	void HandleMeleeHit();
+	
+	void InterruptActions();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastInterruptActions();
 };

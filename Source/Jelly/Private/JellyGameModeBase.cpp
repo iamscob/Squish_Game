@@ -218,6 +218,22 @@ void AJellyGameModeBase::FinishMatch()
 	
 	JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Results);
 	
+	if (UWorld* World = GetWorld())
+	{
+		for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+		{
+			APlayerController* PlayerController = Iterator->Get();
+			
+			AJellyCharacterBase* Character = PlayerController 
+			? Cast<AJellyCharacterBase>(PlayerController->GetPawn()) : nullptr;
+
+			if (Character)
+			{
+				Character->MulticastInterruptActions();
+			}
+		}
+	}
+	
 	GetWorldTimerManager().ClearTimer(RestartTimerHandle);
 	
 	GetWorldTimerManager().SetTimer(RestartTimerHandle, this, &AJellyGameModeBase::RestartMatch,

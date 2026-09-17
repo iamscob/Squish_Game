@@ -307,14 +307,15 @@ void AJellyCharacterBase::RemoveToolMappingContext(AEquippableToolBase* Tool)
 
 void AJellyCharacterBase::HandleThrowReady()
 {
-	if (!IsLocallyControlled() || !bIsPreparingThrow || !ThrowMontage) return;
+	if (!bIsPreparingThrow || !ThrowMontage) return;
 	
-	if (!CanUseInput() || !EquippedTool)
+	if (IsLocallyControlled() && (!CanUseInput() || !EquippedTool))
 	{
 		CancelPreparingThrow();
 		return;
 	}
 	UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+	
 	if (AnimInstance)
 	{
 		AnimInstance->Montage_Pause(ThrowMontage);
@@ -489,6 +490,11 @@ void AJellyCharacterBase::OnRep_EquippedTool()
 		RemoveToolMappingContext(LocallyMappedTool.Get());
 	}
 	LocallyMappedTool = EquippedTool;
+	
+	if (bIsPreparingThrow || bThrowReleasePending)
+	{
+		CancelPreparingThrow();
+	}
 
 	if (!EquippedTool)
 	{
@@ -585,8 +591,11 @@ void AJellyCharacterBase::ApplyRoleMovementSpeed()
 	
 	if (!Movement || !JellyPlayerState) return;
 	
+	const bool bIsChaser = JellyPlayerState->IsChaser();
+	
 	Movement->MaxWalkSpeed = JellyPlayerState->IsChaser() ? ChaserWalkSpeed : RunnerWalkSpeed;
 	
+	SetChaserIndicatorVisible(bIsChaser);
 }
 
 void AJellyCharacterBase::StartPreparingThrow()
@@ -609,6 +618,7 @@ void AJellyCharacterBase::StartPreparingThrow()
 	PendingThrowTool.Reset();
 	bIsPreparingThrow = true;
 	SetThrowAimVisible(true);
+	ServerStartThrowMontage(EquippedTool.Get());
 }
 
 void AJellyCharacterBase::ReleasePreparedThrow()
@@ -642,8 +652,10 @@ void AJellyCharacterBase::ReleasePreparedThrow()
 	bThrowReleasePending = true;
 	SetThrowAimVisible(false);
 	
-		AnimInstance->Montage_Resume(ThrowMontage);
+	AnimInstance->Montage_Resume(ThrowMontage);
+	ServerResumeThrowMontage(PendingThrowTool.Get());
 	
+	HandleThrowRelease();
 }
 
 void AJellyCharacterBase::CancelPreparingThrow()
@@ -661,6 +673,11 @@ void AJellyCharacterBase::CancelPreparingThrow()
 	if (bShouldStopMontage && AnimInstance && ThrowMontage)
 	{
 		AnimInstance->Montage_Stop(0.1f, ThrowMontage);
+	}
+
+	if (bShouldStopMontage && IsLocallyControlled())
+	{
+		ServerCancelThrowMontage();
 	}
 }
 
@@ -738,4 +755,105 @@ void AJellyCharacterBase::MulticastPlayMeleeMontage_Implementation()
 	if (!AnimInstance || !MeleeMontage) return;
 	
 	AnimInstance->Montage_Play(MeleeMontage);
+}
+
+void AJellyCharacterBase::ServerStartThrowMontage_Implementation(AEquippableToolBase* ExpectedTool)
+{
+	if (!IsValid(ExpectedTool) || EquippedTool.Get() != ExpectedTool || !CanUseInput() || !ThrowMontage) return;
+	
+	MulticastStartThrowMontage();
+}
+
+void AJellyCharacterBase::MulticastStartThrowMontage_Implementation()
+{
+	if (IsLocallyControlled()) return;
+	
+	bIsPreparingThrow = true;
+
+	if (GetNetMode() == NM_DedicatedServer) return;
+	
+	UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+	
+	if (!AnimInstance || !ThrowMontage) return;
+	
+	AnimInstance->Montage_Play(ThrowMontage);
+}
+
+void AJellyCharacterBase::ServerResumeThrowMontage_Implementation(AEquippableToolBase* ExpectedTool)
+{
+	
+	if (!IsValid(ExpectedTool) || EquippedTool.Get() != ExpectedTool || !CanUseInput() || !ThrowMontage)
+	{
+		MulticastCancelThrowMontage();
+		return;
+	}
+	MulticastResumeThrowMontage();
+}
+
+void AJellyCharacterBase::MulticastResumeThrowMontage_Implementation()
+{
+	if (IsLocallyControlled()) return;
+	
+	bIsPreparingThrow = false;
+	
+	if (GetNetMode() == NM_DedicatedServer) return;
+	
+	UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+	
+	if (AnimInstance && ThrowMontage)
+	{
+		AnimInstance->Montage_Resume(ThrowMontage);
+	}
+}
+
+void AJellyCharacterBase::ServerCancelThrowMontage_Implementation()
+{
+	MulticastCancelThrowMontage();
+}
+
+void AJellyCharacterBase::MulticastCancelThrowMontage_Implementation()
+{
+	if (IsLocallyControlled()) return;
+	
+	bIsPreparingThrow = false;
+
+	if (GetNetMode() == NM_DedicatedServer) return;
+	
+	UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+	
+	if (AnimInstance && ThrowMontage)
+	{
+		AnimInstance->Montage_Stop(.1f, ThrowMontage);
+	}
+}
+
+void AJellyCharacterBase::InterruptActions()
+{
+	bIsPreparingThrow = false;
+	bThrowReleasePending = false;
+	PendingThrowTool.Reset();
+	PendingThrowDirection = FVector::ForwardVector;
+	
+	bMeleeHitPending = false; 
+	
+	SetThrowAimVisible(false);
+	
+	UAnimInstance* AnimInstance = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+	
+	if (!AnimInstance) return;
+	
+	if (ThrowMontage)
+	{
+		AnimInstance->Montage_Stop(.1f, ThrowMontage);
+	}
+	
+	if (MeleeMontage)
+	{
+		AnimInstance->Montage_Stop(.1f, MeleeMontage);
+	}
+}
+
+void AJellyCharacterBase::MulticastInterruptActions_Implementation()
+{
+	InterruptActions();
 }

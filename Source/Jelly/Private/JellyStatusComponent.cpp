@@ -220,6 +220,9 @@ void UJellyStatusComponent::MulticastStartRagdoll_Implementation(FVector LaunchV
 {
 	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
 	if (!OwnerCharacter || !GetWorld()) return;
+	
+	OwnerCharacter->InterruptActions();
+	
 	GetWorld()->GetTimerManager().ClearTimer(RagdollBlendTimerHandle);
 	
 	PreRagdollLocation = OwnerCharacter->GetActorLocation();
