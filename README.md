@@ -1,18 +1,32 @@
-\# Squish\_Game 
+Jelly
 
-A chaotic multiplayer game where you control squishy jellies with your friends and have fun! 
+A multiplayer party game built in Unreal Engine 5 with C++ and Blueprints.
 
+Jelly is a fast-paced multiplayer party game for 4–6 players, where players control jelly characters and compete across short round-based matches.
 
+One player becomes the Chaser and must catch another player before the round ends. The Chaser role can be transferred through player interaction, while pickups, throwable objects, stuns and knockback create chaotic situations during each round.
 
-\# Technology:
+The project is primarily focused on multiplayer gameplay programming, Unreal Engine networking and gameplay system architecture.
 
-\*\*Unreal Engine 5 C++\*\*
+Tech Stack
+Unreal Engine 5
+C++
+Blueprints
+Unreal Multiplayer / Replication
+Key Systems
+Round-based multiplayer game flow
+Server-authoritative Chaser system
+Chaser role selection and transfer
+GameMode / GameState / PlayerState architecture
+Replicated gameplay state
+Server RPCs and RepNotify
+Component-based combat and status systems
+Pickups and throwable objects
+Stun and knockback mechanics
+Player-specific replicated visual feedback
 
+Project Status:
 
+In active development
 
-\# Status:
-
-Early Development in progress.
-
-
-
+The current goal is to build a polished multiplayer vertical slice demonstrating the complete gameplay loop and core networking systems and publish it on Steam :)
