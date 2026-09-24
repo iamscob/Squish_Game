@@ -1,4 +1,4 @@
-Jelly
+##Jelly
 
 A multiplayer party game built in Unreal Engine 5 with C++ and Blueprints.
 
@@ -30,3 +30,13 @@ Project Status:
 In active development
 
 The current goal is to build a polished multiplayer vertical slice demonstrating the complete gameplay loop and core networking systems and publish it on Steam :)
+
+
+## Gameplay Architecture
+
+* **GameMode** controls server-side match rules, including round flow and Chaser selection.
+* **GameState** stores shared match information such as the current round, match phase and timers.
+* **PlayerState** stores persistent player-specific state such as the Chaser role and penalty data.
+* **Character** handles player-controlled gameplay such as movement, interactions and combat-related actions.
+* **Actor Components** are used to separate systems such as status effects, combat and inventory/equipment.
+
