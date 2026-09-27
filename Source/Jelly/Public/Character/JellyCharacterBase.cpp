@@ -18,8 +18,8 @@
 #include "DashComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
-
-
+#include "NiagaraComponent.h"
+#include "Components/SceneComponent.h"
 
 // Sets default values
 AJellyCharacterBase::AJellyCharacterBase()
@@ -67,7 +67,18 @@ AJellyCharacterBase::AJellyCharacterBase()
 	ThrowAimDecal->SortOrder = 9;
 	ThrowAimDecal->SetVisibility(false);
 	
+	IndicatorsAnchor = CreateDefaultSubobject<USceneComponent>(TEXT("IndicatorsAnchor"));
 	
+	IndicatorsAnchor->SetupAttachment(GetMesh(), TEXT("Hips"));
+	IndicatorsAnchor->SetAbsolute(false, true, true);
+	IndicatorsAnchor->SetRelativeLocation(FVector::ZeroVector);
+	IndicatorsAnchor->SetRelativeRotation(FRotator::ZeroRotator);
+	IndicatorsAnchor->SetWorldScale3D(FVector::OneVector);
+	
+	StunStarComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("StunStarComponent"));
+	StunStarComponent->SetupAttachment(IndicatorsAnchor);
+	StunStarComponent->SetRelativeLocation(FVector(0.f,0.f, 80.f));
+	StunStarComponent->SetAutoActivate(false);
 	
 
 }
@@ -856,4 +867,25 @@ void AJellyCharacterBase::InterruptActions()
 void AJellyCharacterBase::MulticastInterruptActions_Implementation()
 {
 	InterruptActions();
+}
+
+void AJellyCharacterBase::SetStunStarsActive(bool bActive)
+{
+	if (!StunStarComponent || !IndicatorsAnchor || GetNetMode() == NM_DedicatedServer) return;
+
+	if (bActive)
+	{
+		StunStarComponent->SetAbsolute(false,false,false);
+		StunStarComponent->AttachToComponent(IndicatorsAnchor,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		StunStarComponent->SetRelativeLocation(FVector(0.f,0.f,80.f));
+
+		if (!StunStarComponent->IsActive())
+		{
+			StunStarComponent->Activate(true);
+		}
+	}
+	else
+	{
+		StunStarComponent->DeactivateImmediate();
+	}
 }

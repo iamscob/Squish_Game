@@ -19,14 +19,13 @@
   <component name="ChangeListManager">
     <list default="true" id="36b90232-fbd7-4d8b-bff5-0946c74c700e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Animations/ABP_Jello.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Animations/ABP_Jello.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Animations/AM_Melee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Animations/AM_Melee.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Jello/Animations/AM_Throw.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Jello/Animations/AM_Throw.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/UI/WBP_ChaserIndication.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Jelly.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Jelly.Build.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,61 +76,61 @@
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.28391971429559E-7" />
-      <entry key="MS500" value="0.07813510434456146" />
-      <entry key="S2" value="1.145163610388675" />
-      <entry key="S5" value="2.0297488046908616" />
-      <entry key="S10" value="2.465271361226954" />
-      <entry key="S30" value="2.80939545064072" />
-      <entry key="S60" value="2.940067843459729" />
-      <entry key="M2" value="4.255792349328702" />
-      <entry key="M5" value="14.15983628214837" />
-      <entry key="M10" value="26.373948340648276" />
-      <entry key="M15" value="35.21914287290074" />
-      <entry key="M30" value="68.63755987152834" />
-      <entry key="H1" value="161.812220106323" />
-      <entry key="H2" value="344.99393339085265" />
-      <entry key="H4" value="727.5768972866149" />
-      <entry key="D1" value="5177.509530445926" />
-      <entry key="W1" value="10341.497035131068" />
+      <entry key="MS100" value="4.131782380382729E-45" />
+      <entry key="MS500" value="1.3280907758712763E-9" />
+      <entry key="S2" value="0.006206720701424472" />
+      <entry key="S5" value="0.16133986284405355" />
+      <entry key="S10" value="0.5665066452331163" />
+      <entry key="S30" value="1.918375754402813" />
+      <entry key="S60" value="5.017155083352902" />
+      <entry key="M2" value="15.332468737480461" />
+      <entry key="M5" value="40.47348727843836" />
+      <entry key="M10" value="66.80795676382458" />
+      <entry key="M15" value="88.2185974774531" />
+      <entry key="M30" value="139.94209600199792" />
+      <entry key="H1" value="236.0198434562473" />
+      <entry key="H2" value="420.9787256386784" />
+      <entry key="H4" value="802.0777492853213" />
+      <entry key="D1" value="5235.178251646478" />
+      <entry key="W1" value="10490.770926194791" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0000092938256346" />
-      <entry key="S60" value="1.007897086366398" />
-      <entry key="M2" value="1.244186474953696" />
-      <entry key="M5" value="2.968176229209291" />
-      <entry key="M10" value="5.33146695985079" />
-      <entry key="M15" value="8.406811813571789" />
-      <entry key="M30" value="28.759845100893752" />
-      <entry key="H1" value="94.54457012125178" />
-      <entry key="H2" value="220.33984296459246" />
-      <entry key="H4" value="436.90782179538866" />
-      <entry key="D1" value="2411.092214172172" />
-      <entry key="W1" value="4512.720375654976" />
+      <entry key="MS100" value="1.0000000000019769" />
+      <entry key="MS500" value="1.0045990735686787" />
+      <entry key="S2" value="1.3486613301955217" />
+      <entry key="S5" value="2.251363066633658" />
+      <entry key="S10" value="3.5893151589353787" />
+      <entry key="S30" value="7.747144547374589" />
+      <entry key="S60" value="13.217489471047271" />
+      <entry key="M2" value="22.33540092230197" />
+      <entry key="M5" value="37.88715945404739" />
+      <entry key="M10" value="51.88098261607323" />
+      <entry key="M15" value="62.304065793074265" />
+      <entry key="M30" value="87.56152176970821" />
+      <entry key="H1" value="144.8045363235961" />
+      <entry key="H2" value="265.2213652386193" />
+      <entry key="H4" value="483.17612819602806" />
+      <entry key="D1" value="2463.2809078174696" />
+      <entry key="W1" value="4608.678945647876" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="2.452180742874395E-5" />
-      <entry key="MS500" value="0.18155757209552306" />
-      <entry key="S2" value="1.5968512250613114" />
-      <entry key="S5" value="2.7161882202678376" />
-      <entry key="S10" value="3.284016809244085" />
-      <entry key="S30" value="3.7423192906507956" />
-      <entry key="S60" value="3.913234835462217" />
-      <entry key="M2" value="5.47802139776529" />
-      <entry key="M5" value="17.105710163885973" />
-      <entry key="M10" value="31.685315491079727" />
-      <entry key="M15" value="43.60638488135662" />
-      <entry key="M30" value="97.37142775585669" />
-      <entry key="H1" value="256.32038111001964" />
-      <entry key="H2" value="565.2929596816408" />
-      <entry key="H4" value="1164.4422505903885" />
-      <entry key="D1" value="7588.552888606089" />
-      <entry key="W1" value="14854.203442341874" />
+      <entry key="MS100" value="1.2377435056042273E-4" />
+      <entry key="MS500" value="0.16606326893586226" />
+      <entry key="S2" value="0.8725029807466593" />
+      <entry key="S5" value="2.0393155902295512" />
+      <entry key="S10" value="3.8069822028842766" />
+      <entry key="S30" value="9.374622158039678" />
+      <entry key="S60" value="17.979931618406635" />
+      <entry key="M2" value="37.4389604448771" />
+      <entry key="M5" value="78.18723377972235" />
+      <entry key="M10" value="118.56224969569797" />
+      <entry key="M15" value="150.417896295196" />
+      <entry key="M30" value="227.42745959083481" />
+      <entry key="H1" value="380.7634166238493" />
+      <entry key="H2" value="686.1471537658647" />
+      <entry key="H4" value="1285.2053437818213" />
+      <entry key="D1" value="7698.409416210805" />
+      <entry key="W1" value="15099.435653111523" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -299,7 +298,10 @@
       <workItem from="1789472578522" duration="10073000" />
       <workItem from="1789501265633" duration="373000" />
       <workItem from="1789630503205" duration="61000" />
-      <workItem from="1789630593414" duration="6495000" />
+      <workItem from="1789630593414" duration="6811000" />
+      <workItem from="1790080559939" duration="2841000" />
+      <workItem from="1790502383403" duration="215000" />
+      <workItem from="1790502826380" duration="2916000" />
     </task>
     <task id="LOCAL-00001" summary="CORE CHANGES: tool throwing + splitting pickups into Consumables/Tools&#10;&#10;PICKUPS UPDATES:&#10;- Throwing in the character's facing direction with ThrowingTool size restoration&#10;- Consumables: added animation : rotation and levitation (no physics)&#10;- Tools: physics (falling, bouncing)&#10;- Outline Material for pickups added&#10;&#10;OTHER FIXES:&#10;- Fixed some bugs that caused editor crashes &#10;- Removed Pickups respawn logic">
       <option name="closed" value="true" />
@@ -397,7 +399,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789486943802</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="RESPONSIVE ACTIONS ANIMATIONS AND UI CHANGES:&#10;&#10;- add hold-to-aim and release-to-throw input flow&#10;- add a local throw direction indicator with an animated reveal&#10;- pause the throw montage in the prepared pose while input is held&#10;- resume the montage and throw immediately when input is released&#10;- add melee attack montage with an early notify-driven hit window&#10;- preserve locomotion using an upper-body animation slot&#10;- synchronize throw and melee animations across server and clients&#10;- cancel prepared actions on stun, round end, and equipped tool loss&#10;- add a local player identity ring and prevent decals from rendering on tools&#10;- add an animated two-part marker above the current chaser&#10;- animate the upper marker with vertical movement and the lower marker with a pulse&#10;- update marker visibility from the replicated chaser state&#10;- improve throw and melee responsiveness&#10;- remove obsolete throw-release notify handling">
+      <option name="closed" value="true" />
+      <created>1789639642170</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1789639642170</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -421,7 +431,8 @@
     <MESSAGE value="CORE GAMEPLAY CHANGES:&#10;(Mainly for playtest) &#10;*add continuous matches and contextual combat*&#10;- Replace the round system with a single continuous match flow.&#10;- Add Waiting, Countdown, Playing, and Results match phases.&#10;- Track replicated chaser time and determine winners or draws.&#10;- Restart matches without disconnecting connected players.&#10;- Reset player roles, status, timers, and spawn positions between matches.&#10;- Start matches only when the required number of players is connected.&#10;- Restrict movement, jumping, throwing, and attacks outside active gameplay.&#10;- Update the HUD for the new match phases and results.&#10;- Improve ragdoll knockback and recover characters at safe ground positions.&#10;- Reattach equipped tools correctly on remote clients.&#10;- Remove manual tool dropping from the game.&#10;- Add separate HandMelee, ToolMelee, and ThrownTool hit types.&#10;- Allow the chaser to attack without a tool using shorter hand range.&#10;- Prevent runners without tools from performing melee attacks.&#10;- Give tool melee and thrown tools distinct stun and knockback values." />
     <MESSAGE value="*gameplay expansion and UI upgrades:*&#10;&#10;&#10;- add a chaser-only dash and movement speed advantage&#10;- tune hand melee range for unarmed chaser attacks&#10;- protect the active chaser briefly after ragdoll recovery&#10;- respawn players that fall outside the arena&#10;- return lost tools to their arena respawn point&#10;- add equipped tool information to the HUD&#10;- add an animated YOU'RE IT role-transfer notification&#10;- add a short red screen vignette when becoming the chaser" />
     <MESSAGE value="UI AND ANIMATION UPDATES:&#10;&#10;- Add local player ring and throw aiming indicator&#10;- Prepare throws while holding Ctrl and release on animation notify&#10;- Preserve throw direction selected when releasing Ctrl&#10;- Add upper-body throw and melee montages&#10;- Support melee animations with tools and bare hands&#10;- Synchronize melee hit detection with MeleeHit notify&#10;- Replicate melee montage playback to other players&#10;- Validate pending throws and prevent duplicate release events&#10;- Prevent indicator decals from appearing on tools" />
-    <option name="LAST_COMMIT_MESSAGE" value="UI AND ANIMATION UPDATES:&#10;&#10;- Add local player ring and throw aiming indicator&#10;- Prepare throws while holding Ctrl and release on animation notify&#10;- Preserve throw direction selected when releasing Ctrl&#10;- Add upper-body throw and melee montages&#10;- Support melee animations with tools and bare hands&#10;- Synchronize melee hit detection with MeleeHit notify&#10;- Replicate melee montage playback to other players&#10;- Validate pending throws and prevent duplicate release events&#10;- Prevent indicator decals from appearing on tools" />
+    <MESSAGE value="RESPONSIVE ACTIONS ANIMATIONS AND UI CHANGES:&#10;&#10;- add hold-to-aim and release-to-throw input flow&#10;- add a local throw direction indicator with an animated reveal&#10;- pause the throw montage in the prepared pose while input is held&#10;- resume the montage and throw immediately when input is released&#10;- add melee attack montage with an early notify-driven hit window&#10;- preserve locomotion using an upper-body animation slot&#10;- synchronize throw and melee animations across server and clients&#10;- cancel prepared actions on stun, round end, and equipped tool loss&#10;- add a local player identity ring and prevent decals from rendering on tools&#10;- add an animated two-part marker above the current chaser&#10;- animate the upper marker with vertical movement and the lower marker with a pulse&#10;- update marker visibility from the replicated chaser state&#10;- improve throw and melee responsiveness&#10;- remove obsolete throw-release notify handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="RESPONSIVE ACTIONS ANIMATIONS AND UI CHANGES:&#10;&#10;- add hold-to-aim and release-to-throw input flow&#10;- add a local throw direction indicator with an animated reveal&#10;- pause the throw montage in the prepared pose while input is held&#10;- resume the montage and throw immediately when input is released&#10;- add melee attack montage with an early notify-driven hit window&#10;- preserve locomotion using an upper-body animation slot&#10;- synchronize throw and melee animations across server and clients&#10;- cancel prepared actions on stun, round end, and equipped tool loss&#10;- add a local player identity ring and prevent decals from rendering on tools&#10;- add an animated two-part marker above the current chaser&#10;- animate the upper marker with vertical movement and the lower marker with a pulse&#10;- update marker visibility from the replicated chaser state&#10;- improve throw and melee responsiveness&#10;- remove obsolete throw-release notify handling" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

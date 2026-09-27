@@ -27,6 +27,8 @@ class UMaterialInstanceDynamic;
 class UDashComponent;
 class UDecalComponent;
 class UAnimMontage;
+class UNiagaraComponent;
+class USceneComponent;
 
 UCLASS()
 class JELLY_API AJellyCharacterBase : public ACharacter
@@ -131,6 +133,12 @@ protected:
 	
 	UPROPERTY(Transient)
 	TObjectPtr<UMaterialInstanceDynamic> ThrowAimMaterial;	
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Jelly|Effects")
+	TObjectPtr<UNiagaraComponent> StunStarComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Jelly|Indicators")
+	TObjectPtr<USceneComponent> IndicatorsAnchor;
 	
 	virtual void PossessedBy(AController* NewController) override;
 	
@@ -263,4 +271,6 @@ public:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastInterruptActions();
+	
+	void SetStunStarsActive(bool bActive);
 };

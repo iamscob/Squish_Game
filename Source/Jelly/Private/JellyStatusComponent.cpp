@@ -143,6 +143,7 @@ bool UJellyStatusComponent::ApplyHit(AJellyCharacterBase* Attacker, const FVecto
 		default: return false;
 	}
 		bIsStunned = true;
+		OnRep_IsStunned();
 	
 		const FVector HorizontalDirection = FVector(HitDirection.X, HitDirection.Y, 0.f).GetSafeNormal();
 		const FVector LaunchVelocity = HorizontalDirection * HorizontalSpeed + FVector::UpVector * VerticalSpeed;
@@ -186,7 +187,7 @@ void UJellyStatusComponent::RecoverFromStun()
 	}
 	
 	bIsStunned = false;
-	
+	OnRep_IsStunned();
 	MulticastRecoverFromStun(SafeCapsuleLocation);
 
 	if (IsChasing())
@@ -275,6 +276,7 @@ void UJellyStatusComponent::ResetForNewMatch(const FVector& SpawnLocation)
 	OwnerCharacter->GetWorldTimerManager().ClearTimer(StunTimerHandle);
 	
 	bIsStunned = false;
+	OnRep_IsStunned();
 	
 	ProtectionEndTime = 0.f;
 	
@@ -283,4 +285,13 @@ void UJellyStatusComponent::ResetForNewMatch(const FVector& SpawnLocation)
 	OwnerCharacter->ForceNetUpdate();
 }
 
+void UJellyStatusComponent::OnRep_IsStunned()
+{
+	AJellyCharacterBase* OwnerCharacter = Cast<AJellyCharacterBase>(GetOwner());
+
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->SetStunStarsActive(bIsStunned);
+	}
+}
 

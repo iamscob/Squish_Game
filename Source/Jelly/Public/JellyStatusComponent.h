@@ -26,7 +26,7 @@ public:
 	
 	UJellyStatusComponent();
 		
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category= "Status")
+	UPROPERTY(ReplicatedUsing= OnRep_IsStunned, VisibleAnywhere, BlueprintReadOnly, Category= "Status")
 	bool bIsStunned = false;
 	
 
@@ -62,8 +62,8 @@ private:
 	
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastRecoverFromStun(FVector RecoveryLocation);
-
-	
+	UFUNCTION()
+	void OnRep_IsStunned();
 	
 
 	
