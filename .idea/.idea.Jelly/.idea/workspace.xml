@@ -20,12 +20,39 @@
     <list default="true" id="36b90232-fbd7-4d8b-bff5-0946c74c700e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Jelly/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/WBP_ChaserIndication.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Jelly.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Jelly.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyStatusComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_JellyOutOfBoundsVolume.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupConsumable.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/BP_PickupTool.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/Pickups/BP_PickupConsumable.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Blueprints/Pickups/BP_PickupTool.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Data/DA_Pickup_001.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Data/DA_Pickup_002.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Data/DA_Tool_001.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ThirdPerson/Data/DT_PickupData.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/5/FQ/049UJG1EW2N0P2481I2WNI.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Lvl_ThirdPerson/A/65/SVM9PHS5J45A6OSF3H74BY.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/Data/ItemData.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/EquippableToolDefinition.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/InventoryComponent.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/ItemDefinition.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/JellyOutOfBoundsVolume.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Private/JellyOutOfBoundsVolume.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/Pickup/PickupBase.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/Pickup/PickupConsumable.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Private/Pickup/PickupTool.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/Character/JellyCharacterBase.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyStatusComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Data/ItemData.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/EquippableToolDefinition.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/InventoryComponent.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/ItemDefinition.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyGameModeBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyGameModeBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/JellyOutOfBoundsVolume.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Jelly/Public/JellyOutOfBoundsVolume.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Pickup/PickupBase.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Pickup/PickupConsumable.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Jelly/Public/Pickup/PickupTool.h" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,12 +89,16 @@
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyGameModeBase.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyGameStateBase.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyHudWidget.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyMapConfig.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/JellyOutOfBoundsVolume.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Private/ToolSpawnDirector.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/DashComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JelloCombatComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyGameModeBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyGameStateBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyHudWidget.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/JellyMapConfig.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Jelly/Public/ToolSpawnDirector.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="McpProjectServerCommands">
     <commands />
@@ -76,61 +107,61 @@
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="4.131782380382729E-45" />
-      <entry key="MS500" value="1.3280907758712763E-9" />
-      <entry key="S2" value="0.006206720701424472" />
-      <entry key="S5" value="0.16133986284405355" />
-      <entry key="S10" value="0.5665066452331163" />
-      <entry key="S30" value="1.918375754402813" />
-      <entry key="S60" value="5.017155083352902" />
-      <entry key="M2" value="15.332468737480461" />
-      <entry key="M5" value="40.47348727843836" />
-      <entry key="M10" value="66.80795676382458" />
-      <entry key="M15" value="88.2185974774531" />
-      <entry key="M30" value="139.94209600199792" />
-      <entry key="H1" value="236.0198434562473" />
-      <entry key="H2" value="420.9787256386784" />
-      <entry key="H4" value="802.0777492853213" />
-      <entry key="D1" value="5235.178251646478" />
-      <entry key="W1" value="10490.770926194791" />
+      <entry key="MS100" value="5.1193198747057E-12" />
+      <entry key="MS500" value="0.007100851492864357" />
+      <entry key="S2" value="0.472037905531529" />
+      <entry key="S5" value="1.1193067196975235" />
+      <entry key="S10" value="1.4954728281113636" />
+      <entry key="S30" value="1.8150944780174814" />
+      <entry key="S60" value="1.90528166109616" />
+      <entry key="M2" value="1.956009100218731" />
+      <entry key="M5" value="2.7275271523949787" />
+      <entry key="M10" value="11.237902043406184" />
+      <entry key="M15" value="27.63987933132257" />
+      <entry key="M30" value="88.72767197000873" />
+      <entry key="H1" value="219.36042557828793" />
+      <entry key="H2" value="464.6595362393249" />
+      <entry key="H4" value="899.8366156816888" />
+      <entry key="D1" value="5347.189940003789" />
+      <entry key="W1" value="10961.009734903098" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0000000000019769" />
-      <entry key="MS500" value="1.0045990735686787" />
-      <entry key="S2" value="1.3486613301955217" />
-      <entry key="S5" value="2.251363066633658" />
-      <entry key="S10" value="3.5893151589353787" />
-      <entry key="S30" value="7.747144547374589" />
-      <entry key="S60" value="13.217489471047271" />
-      <entry key="M2" value="22.33540092230197" />
-      <entry key="M5" value="37.88715945404739" />
-      <entry key="M10" value="51.88098261607323" />
-      <entry key="M15" value="62.304065793074265" />
-      <entry key="M30" value="87.56152176970821" />
-      <entry key="H1" value="144.8045363235961" />
-      <entry key="H2" value="265.2213652386193" />
-      <entry key="H4" value="483.17612819602806" />
-      <entry key="D1" value="2463.2809078174696" />
-      <entry key="W1" value="4608.678945647876" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0000000000018336" />
+      <entry key="S60" value="1.0000033257357819" />
+      <entry key="M2" value="1.005081432765396" />
+      <entry key="M5" value="1.7134719790866075" />
+      <entry key="M10" value="8.430779973657167" />
+      <entry key="M15" value="20.300731162435614" />
+      <entry key="M30" value="60.22106351586476" />
+      <entry key="H1" value="135.63860115791937" />
+      <entry key="H2" value="275.9408307957822" />
+      <entry key="H4" value="522.4507274460218" />
+      <entry key="D1" value="2557.208571209074" />
+      <entry key="W1" value="4875.873368551248" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.2377435056042273E-4" />
-      <entry key="MS500" value="0.16606326893586226" />
-      <entry key="S2" value="0.8725029807466593" />
-      <entry key="S5" value="2.0393155902295512" />
-      <entry key="S10" value="3.8069822028842766" />
-      <entry key="S30" value="9.374622158039678" />
-      <entry key="S60" value="17.979931618406635" />
-      <entry key="M2" value="37.4389604448771" />
-      <entry key="M5" value="78.18723377972235" />
-      <entry key="M10" value="118.56224969569797" />
-      <entry key="M15" value="150.417896295196" />
-      <entry key="M30" value="227.42745959083481" />
-      <entry key="H1" value="380.7634166238493" />
-      <entry key="H2" value="686.1471537658647" />
-      <entry key="H4" value="1285.2053437818213" />
-      <entry key="D1" value="7698.409416210805" />
-      <entry key="W1" value="15099.435653111523" />
+      <entry key="MS100" value="2.510043536184559E-4" />
+      <entry key="MS500" value="0.19481406383594962" />
+      <entry key="S2" value="0.9921012494743465" />
+      <entry key="S5" value="1.7831581463299129" />
+      <entry key="S10" value="2.2787407535472246" />
+      <entry key="S30" value="2.727877820028809" />
+      <entry key="S60" value="2.859470731834629" />
+      <entry key="M2" value="2.9375363773429464" />
+      <entry key="M5" value="4.427530992905918" />
+      <entry key="M10" value="19.64423571935174" />
+      <entry key="M15" value="47.90404158826665" />
+      <entry key="M30" value="148.89558804773247" />
+      <entry key="H1" value="354.93715684036215" />
+      <entry key="H2" value="740.537563944481" />
+      <entry key="H4" value="1422.2292471722778" />
+      <entry key="D1" value="7904.346627907004" />
+      <entry key="W1" value="15836.868086343453" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -301,7 +332,10 @@
       <workItem from="1789630593414" duration="6811000" />
       <workItem from="1790080559939" duration="2841000" />
       <workItem from="1790502383403" duration="215000" />
-      <workItem from="1790502826380" duration="2916000" />
+      <workItem from="1790502826380" duration="5482000" />
+      <workItem from="1790945952849" duration="733000" />
+      <workItem from="1791118920404" duration="9130000" />
+      <workItem from="1791128362908" duration="3123000" />
     </task>
     <task id="LOCAL-00001" summary="CORE CHANGES: tool throwing + splitting pickups into Consumables/Tools&#10;&#10;PICKUPS UPDATES:&#10;- Throwing in the character's facing direction with ThrowingTool size restoration&#10;- Consumables: added animation : rotation and levitation (no physics)&#10;- Tools: physics (falling, bouncing)&#10;- Outline Material for pickups added&#10;&#10;OTHER FIXES:&#10;- Fixed some bugs that caused editor crashes &#10;- Removed Pickups respawn logic">
       <option name="closed" value="true" />
@@ -407,7 +441,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789639642170</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="UPDATE IMPROVEMENTS:&#10;&#10;- Add Niagara dependency and stun stars component&#10;- Synchronize stun effect activation through bIsStunned RepNotify&#10;- Stop the effect on recovery and reset for a new match&#10;- Add a shared indicators anchor attached to the Hips bone&#10;- Keep indicators upright independently of ragdoll rotation&#10;- Attach stun stars and the chaser widget to the shared anchor&#10;- Restore the original stun component name to resolve duplication">
+      <option name="closed" value="true" />
+      <created>1790505885253</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1790505885253</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -432,7 +474,8 @@
     <MESSAGE value="*gameplay expansion and UI upgrades:*&#10;&#10;&#10;- add a chaser-only dash and movement speed advantage&#10;- tune hand melee range for unarmed chaser attacks&#10;- protect the active chaser briefly after ragdoll recovery&#10;- respawn players that fall outside the arena&#10;- return lost tools to their arena respawn point&#10;- add equipped tool information to the HUD&#10;- add an animated YOU'RE IT role-transfer notification&#10;- add a short red screen vignette when becoming the chaser" />
     <MESSAGE value="UI AND ANIMATION UPDATES:&#10;&#10;- Add local player ring and throw aiming indicator&#10;- Prepare throws while holding Ctrl and release on animation notify&#10;- Preserve throw direction selected when releasing Ctrl&#10;- Add upper-body throw and melee montages&#10;- Support melee animations with tools and bare hands&#10;- Synchronize melee hit detection with MeleeHit notify&#10;- Replicate melee montage playback to other players&#10;- Validate pending throws and prevent duplicate release events&#10;- Prevent indicator decals from appearing on tools" />
     <MESSAGE value="RESPONSIVE ACTIONS ANIMATIONS AND UI CHANGES:&#10;&#10;- add hold-to-aim and release-to-throw input flow&#10;- add a local throw direction indicator with an animated reveal&#10;- pause the throw montage in the prepared pose while input is held&#10;- resume the montage and throw immediately when input is released&#10;- add melee attack montage with an early notify-driven hit window&#10;- preserve locomotion using an upper-body animation slot&#10;- synchronize throw and melee animations across server and clients&#10;- cancel prepared actions on stun, round end, and equipped tool loss&#10;- add a local player identity ring and prevent decals from rendering on tools&#10;- add an animated two-part marker above the current chaser&#10;- animate the upper marker with vertical movement and the lower marker with a pulse&#10;- update marker visibility from the replicated chaser state&#10;- improve throw and melee responsiveness&#10;- remove obsolete throw-release notify handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="RESPONSIVE ACTIONS ANIMATIONS AND UI CHANGES:&#10;&#10;- add hold-to-aim and release-to-throw input flow&#10;- add a local throw direction indicator with an animated reveal&#10;- pause the throw montage in the prepared pose while input is held&#10;- resume the montage and throw immediately when input is released&#10;- add melee attack montage with an early notify-driven hit window&#10;- preserve locomotion using an upper-body animation slot&#10;- synchronize throw and melee animations across server and clients&#10;- cancel prepared actions on stun, round end, and equipped tool loss&#10;- add a local player identity ring and prevent decals from rendering on tools&#10;- add an animated two-part marker above the current chaser&#10;- animate the upper marker with vertical movement and the lower marker with a pulse&#10;- update marker visibility from the replicated chaser state&#10;- improve throw and melee responsiveness&#10;- remove obsolete throw-release notify handling" />
+    <MESSAGE value="UPDATE IMPROVEMENTS:&#10;&#10;- Add Niagara dependency and stun stars component&#10;- Synchronize stun effect activation through bIsStunned RepNotify&#10;- Stop the effect on recovery and reset for a new match&#10;- Add a shared indicators anchor attached to the Hips bone&#10;- Keep indicators upright independently of ragdoll rotation&#10;- Attach stun stars and the chaser widget to the shared anchor&#10;- Restore the original stun component name to resolve duplication" />
+    <option name="LAST_COMMIT_MESSAGE" value="UPDATE IMPROVEMENTS:&#10;&#10;- Add Niagara dependency and stun stars component&#10;- Synchronize stun effect activation through bIsStunned RepNotify&#10;- Stop the effect on recovery and reset for a new match&#10;- Add a shared indicators anchor attached to the Hips bone&#10;- Keep indicators upright independently of ragdoll rotation&#10;- Attach stun stars and the chaser widget to the shared anchor&#10;- Restore the original stun component name to resolve duplication" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

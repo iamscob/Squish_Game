@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "EnhancedInputSubsystems.h"
-#include "Animation/AnimBlueprint.h"
 #include "Components/StaticMeshComponent.h"
 #include "EquippableToolBase.generated.h"
 
@@ -23,8 +22,6 @@ public:
 	// Sets default values for this actor's properties
 	AEquippableToolBase();
 	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	TObjectPtr<UAnimBlueprint> PickupToolAnim;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> ToolMeshComponent;
@@ -77,6 +74,10 @@ private:
 		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	void EnablePickup();
+	
+	FTransform HomeTransform = FTransform::Identity;
+	
+	bool bHasHomeTransform = false;
 
 	
 protected:
@@ -86,8 +87,6 @@ protected:
 	
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	
 	void StartPickupCooldown();
 	
@@ -96,6 +95,10 @@ public:
 	void ApplyHeldState(AJellyCharacterBase* NewOwningCharacter);
 	
 	void ReturnToArena(const FTransform& ReturnTransform);
+	
+	void ReturnHome();
+	
+	void InitializeWorldTool (const FTransform& InHomeTransform);
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastReturnToArena(FVector ReturnLocation, FRotator ReturnRotation);

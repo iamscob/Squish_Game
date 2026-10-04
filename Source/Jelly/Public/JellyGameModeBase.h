@@ -11,6 +11,7 @@ class AJellyCharacterBase;
 class AJellyPlayerState;
 class APlayerController;
 class AController;
+class AToolSpawnDirector;
 
 UCLASS()
 class JELLY_API AJellyGameModeBase : public AGameModeBase
@@ -85,5 +86,10 @@ private:
 	float ChaserPeriodStartTime = 0.f;
 	bool bIsTrackingChaserTime = false;
 	bool bMatchFlowStarted = false;
+	
+	UPROPERTY()
+	TObjectPtr<AToolSpawnDirector> ToolSpawnDirector;
+	
+	bool bToolSpawnPointsConfigured = false;
 	
 };

@@ -7,7 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Character/JellyCharacterBase.h"
 #include "EquippableToolBase.h"
-#include "Engine/TargetPoint.h"
+
 
 
 // Sets default values
@@ -58,11 +58,9 @@ void AJellyOutOfBoundsVolume::OnTriggerBeginOverlap(UPrimitiveComponent* Overlap
 			GameMode->RespawnCharacter(Character);
 		} return;
 	}
-	if (AEquippableToolBase* Tool = Cast<AEquippableToolBase>(OtherActor))
-	{
-		if (!ToolRespawnPoint) return;
-		
-			Tool->ReturnToArena(ToolRespawnPoint->GetActorTransform());
-	}
+		if (AEquippableToolBase* Tool = Cast<AEquippableToolBase>(OtherActor))
+		{
+			Tool->ReturnHome();
+		}
 }
 

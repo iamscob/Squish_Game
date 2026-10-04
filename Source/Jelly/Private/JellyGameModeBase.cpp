@@ -10,6 +10,7 @@
 #include "JellyGameStateBase.h"
 #include "JellyPlayerState.h"
 #include "Character/JellyCharacterBase.h"
+#include "ToolSpawnDirector.h"
 
 AJellyGameModeBase::AJellyGameModeBase()
 {
@@ -30,6 +31,11 @@ void AJellyGameModeBase::BeginPlay()
 	JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Waiting);
 	JellyGameStateBase->SetRemainingTime(0);
 	
+	for (TActorIterator<AToolSpawnDirector> Iterator(GetWorld()); Iterator; ++Iterator)
+	{
+	ToolSpawnDirector = *Iterator;
+		break;
+	}
 	
     TryStartJellyMatch();
 }
@@ -99,6 +105,12 @@ void AJellyGameModeBase::StartMatch()
 	{
 		JellyGameStateBase->SetMatchPhase(EJellyMatchPhase::Waiting);
 		return;
+	}
+
+	if (!bToolSpawnPointsConfigured && ToolSpawnDirector)
+	{
+	ToolSpawnDirector->ConfigureForPlayers(JellyGameStateBase->PlayerArray.Num());
+		bToolSpawnPointsConfigured = true;  
 	}
 	
 	MatchTimeRemaining = FMath::Max(1, MatchDuration);
@@ -487,3 +499,4 @@ void AJellyGameModeBase::RespawnCharacter(AJellyCharacterBase* Character)
 	
 	Character->ForceNetUpdate();
 }
+

@@ -6,11 +6,9 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Net/UnrealNetwork.h"
-#include "InventoryComponent.h"
 #include "JellyStatusComponent.h"
 #include "JelloCombatComponent.h"
 #include "EquippableToolBase.h"
-#include "EquippableToolDefinition.h"
 #include "JellyPlayerState.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "JellyGameStateBase.h"
@@ -47,7 +45,6 @@ AJellyCharacterBase::AJellyCharacterBase()
 	FollowCamera->FieldOfView = FieldOfView;
 	
 	// Setting Up Components
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	StatusComponent = CreateDefaultSubobject<UJellyStatusComponent>(TEXT("StatusComponent"));
 	CombatComponent = CreateDefaultSubobject<UJelloCombatComponent>(TEXT("CombatComponent"));
 	DashComponent = CreateDefaultSubobject<UDashComponent>(TEXT("DashComponent"));
@@ -222,83 +219,6 @@ void AJellyCharacterBase::Dash()
 	}
 }
 
-// Tool Attachment
-bool AJellyCharacterBase::AttachTool(UEquippableToolDefinition* ToolDefinition)
-{
-	if (!HasAuthority()) return false;
-
-	if (!ToolDefinition) return false;
-	if (EquippedTool) return false;
-	if (!ToolDefinition->ToolAsset) return false;
-	UWorld* World = GetWorld();
-	if (!World) return false;
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Owner = this;
-	SpawnParameters.Instigator = this;
-	AEquippableToolBase* ToolToEquip = World->SpawnActor<AEquippableToolBase>
-	(ToolDefinition->ToolAsset,
-		GetActorTransform(),
-		SpawnParameters);
-	if (!ToolToEquip) return false;
-	
-	UStaticMesh* ToolMesh = ToolDefinition->ToolMesh.IsValid()
-	? ToolDefinition->ToolMesh.Get()
-	: ToolDefinition->ToolMesh.LoadSynchronous();
-
-	if (!ToolMesh || !ToolToEquip->ToolMeshComponent)
-		{
-			ToolToEquip->Destroy();
-			return false;
-		}
-	ToolToEquip->ToolMeshComponent->SetStaticMesh(ToolMesh);
-	
-	ToolToEquip->ApplyHeldState(this);
-	
-	ToolToEquip->OwningCharacter = this;
-	EquippedTool = ToolToEquip;
-	AddToolMappingContext(ToolToEquip);
-	
-	ForceNetUpdate();
-	ToolToEquip->ForceNetUpdate();
-	return true;
-	}
-
-// PickUps Separation
-bool AJellyCharacterBase::GiveItem(UItemDefinition* ItemDefinition)
-{
-	
-	if (!ItemDefinition)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Tool is NULL"));
-		return false;
-	}
-	
-	
-	switch (ItemDefinition->ItemType)
-	{
-	case EItemType::Tool:
-		{
-			UEquippableToolDefinition* ToolDefinition = Cast<UEquippableToolDefinition>(ItemDefinition);
-			if (ToolDefinition != nullptr)
-			{	
-				return AttachTool(ToolDefinition);
-			}
-			else
-			{
-				
-				return false;
-			}
-		}
-	case EItemType::Consumable:
-		{
-			return true;
-		}
-	default:
-		
-		return false;
-	}
-	
-}
 
 void AJellyCharacterBase::RemoveToolMappingContext(AEquippableToolBase* Tool)
 {

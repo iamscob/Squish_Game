@@ -54,12 +54,6 @@ void AEquippableToolBase::BeginPlay()
 	}
 }
 
-// Called every frame
-void AEquippableToolBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
 void AEquippableToolBase::OnToolHit(
 	UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
@@ -213,4 +207,21 @@ void AEquippableToolBase::MulticastReturnToArena_Implementation(FVector ReturnLo
 	ToolMeshComponent->SetGenerateOverlapEvents(true);
 	ToolMeshComponent->SetSimulatePhysics(true);
 	ToolMeshComponent->WakeAllRigidBodies();
+}
+
+void AEquippableToolBase::InitializeWorldTool(const FTransform& InHomeTransform)
+{
+	if (!HasAuthority()) return;
+	
+	HomeTransform = InHomeTransform;
+	bHasHomeTransform = true;
+	
+	ReturnToArena(HomeTransform);
+}
+
+void AEquippableToolBase::ReturnHome()
+{
+	if (!HasAuthority() || !bHasHomeTransform) return;
+	
+	ReturnToArena(HomeTransform);
 }

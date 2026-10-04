@@ -17,10 +17,7 @@ class UAnimBlueprint;
 class UInputMappingContext;
 class UInputAction;
 class UInputComponent;
-class UItemDefinition;
-class UEquippableToolDefinition;
 class AEquippableToolBase;
-class UInventoryComponent;
 class UJellyStatusComponent;
 class UJelloCombatComponent;
 class UMaterialInstanceDynamic;
@@ -101,8 +98,6 @@ protected:
 	
 	
 	
-	UPROPERTY(VisibleAnywhere, Category = "Inventory")
-	TObjectPtr<UInventoryComponent> InventoryComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
 	TObjectPtr<UJellyStatusComponent> StatusComponent;
@@ -238,15 +233,9 @@ public:
 	
 	UFUNCTION()
 	void MeleeAttack();
-
-	UFUNCTION()
-	bool AttachTool(UEquippableToolDefinition* ToolDefinition);
 	
 	UFUNCTION()
 	bool AttachExistingTool(AEquippableToolBase* ToolToEquip);
-	
-	UFUNCTION()
-	bool GiveItem(UItemDefinition* ItemDefinition);
 	
 	void ApplyPlayerColor();
 	

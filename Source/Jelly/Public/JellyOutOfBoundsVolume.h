@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "JellyOutOfBoundsVolume.generated.h"
 
-class ATargetPoint;
 class UBoxComponent;
 
 UCLASS()
@@ -24,9 +23,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "OutOfBounds")
 	TObjectPtr<UBoxComponent> TriggerBox;
-	
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "OutOfBounds")
-	TObjectPtr<ATargetPoint> ToolRespawnPoint;
 	
 	UFUNCTION()
 	void OnTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
